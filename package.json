@@ -1,0 +1,33 @@
+{
+  "name": "ge90-engine-laboratory",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "node --test --test-isolation=none tests/*.test.js",
+    "test:e2e": "npm run build && node tests/browser.mjs",
+    "audit": "node scripts/audit-geometry.mjs",
+    "docs:hierarchy": "node scripts/export-hierarchy.mjs",
+    "format:check": "prettier --check src tests scripts vite.config.js package.json"
+  },
+  "dependencies": {
+    "@fontsource/ibm-plex-mono": "5.2.6",
+    "@fontsource/inter": "5.2.6",
+    "lucide-react": "0.468.0",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "three": "0.180.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1",
+    "@vitejs/plugin-react": "5.0.4",
+    "prettier": "3.6.2",
+    "vite": "7.1.12"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  }
+}

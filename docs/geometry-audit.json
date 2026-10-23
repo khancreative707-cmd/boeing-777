@@ -1,0 +1,352 @@
+{
+  "checks": [
+    {
+      "name": "Composite fan and leading edge fit the 128-inch radial envelope",
+      "passed": true,
+      "measured": 1.6256000582854886
+    },
+    {
+      "name": "Fan tip clears the inner containment case",
+      "passed": true,
+      "measured": 0.031400000000000095
+    },
+    {
+      "name": "Fan fits through the inlet during axial module extraction",
+      "passed": true,
+      "measured": 0.019400000000000084
+    },
+    {
+      "name": "booster.stage.1: disk bore clears its shaft",
+      "passed": true,
+      "measured": 0.024999995411521245
+    },
+    {
+      "name": "booster.stage.1: stator inner span clears rotor hub",
+      "passed": true,
+      "measured": 0.01799998609548681
+    },
+    {
+      "name": "booster.stage.1: full rotor airfoil stays inside the intended annulus",
+      "passed": true,
+      "measured": -1.4858944463735924e-8
+    },
+    {
+      "name": "booster.stage.2: disk bore clears its shaft",
+      "passed": true,
+      "measured": 0.024999995411521245
+    },
+    {
+      "name": "booster.stage.2: stator inner span clears rotor hub",
+      "passed": true,
+      "measured": 0.01799997384683416
+    },
+    {
+      "name": "booster.stage.2: full rotor airfoil stays inside the intended annulus",
+      "passed": true,
+      "measured": -2.5821082050292432e-8
+    },
+    {
+      "name": "booster.stage.3: disk bore clears its shaft",
+      "passed": true,
+      "measured": 0.024999995411521245
+    },
+    {
+      "name": "booster.stage.3: stator inner span clears rotor hub",
+      "passed": true,
+      "measured": 0.017999974524100903
+    },
+    {
+      "name": "booster.stage.3: full rotor airfoil stays inside the intended annulus",
+      "passed": true,
+      "measured": -2.7557121362598025e-8
+    },
+    {
+      "name": "booster.stage.4: disk bore clears its shaft",
+      "passed": true,
+      "measured": 0.024999995411521245
+    },
+    {
+      "name": "booster.stage.4: stator inner span clears rotor hub",
+      "passed": true,
+      "measured": 0.01799997069111381
+    },
+    {
+      "name": "booster.stage.4: full rotor airfoil stays inside the intended annulus",
+      "passed": true,
+      "measured": -2.937051796214618e-8
+    },
+    {
+      "name": "hpc.stage.1: disk bore clears its shaft",
+      "passed": true,
+      "measured": 0.014999995227168994
+    },
+    {
+      "name": "hpc.stage.1: stator inner span clears rotor hub",
+      "passed": true,
+      "measured": 0.017999970667868237
+    },
+    {
+      "name": "hpc.stage.1: full rotor airfoil stays inside the intended annulus",
+      "passed": true,
+      "measured": -2.5560324135032175e-8
+    },
+    {
+      "name": "hpc.stage.2: disk bore clears its shaft",
+      "passed": true,
+      "measured": 0.014999995227168994
+    },
+    {
+      "name": "hpc.stage.2: stator inner span clears rotor hub",
+      "passed": true,
+      "measured": 0.017999984458563545
+    },
+    {
+      "name": "hpc.stage.2: full rotor airfoil stays inside the intended annulus",
+      "passed": true,
+      "measured": -1.5860393554056884e-8
+    },
+    {
+      "name": "hpc.stage.3: disk bore clears its shaft",
+      "passed": true,
+      "measured": 0.014999995227168994
+    },
+    {
+      "name": "hpc.stage.3: stator inner span clears rotor hub",
+      "passed": true,
+      "measured": 0.017999974339968916
+    },
+    {
+      "name": "hpc.stage.3: full rotor airfoil stays inside the intended annulus",
+      "passed": true,
+      "measured": -2.2987118930561934e-8
+    },
+    {
+      "name": "hpc.stage.4: disk bore clears its shaft",
+      "passed": true,
+      "measured": 0.014999995227168994
+    },
+    {
+      "name": "hpc.stage.4: stator inner span clears rotor hub",
+      "passed": true,
+      "measured": 0.01799997593263286
+    },
+    {
+      "name": "hpc.stage.4: full rotor airfoil stays inside the intended annulus",
+      "passed": true,
+      "measured": -2.1496204760662607e-8
+    },
+    {
+      "name": "hpc.stage.5: disk bore clears its shaft",
+      "passed": true,
+      "measured": 0.014999995227168994
+    },
+    {
+      "name": "hpc.stage.5: stator inner span clears rotor hub",
+      "passed": true,
+      "measured": 0.017999976226369896
+    },
+    {
+      "name": "hpc.stage.5: full rotor airfoil stays inside the intended annulus",
+      "passed": true,
+      "measured": -2.3587380548750758e-8
+    },
+    {
+      "name": "hpc.stage.6: disk bore clears its shaft",
+      "passed": true,
+      "measured": 0.014999995227168994
+    },
+    {
+      "name": "hpc.stage.6: stator inner span clears rotor hub",
+      "passed": true,
+      "measured": 0.017999980066513543
+    },
+    {
+      "name": "hpc.stage.6: full rotor airfoil stays inside the intended annulus",
+      "passed": true,
+      "measured": -2.0157333802117705e-8
+    },
+    {
+      "name": "hpc.stage.7: disk bore clears its shaft",
+      "passed": true,
+      "measured": 0.014999995227168994
+    },
+    {
+      "name": "hpc.stage.7: stator inner span clears rotor hub",
+      "passed": true,
+      "measured": 0.017999976117794803
+    },
+    {
+      "name": "hpc.stage.7: full rotor airfoil stays inside the intended annulus",
+      "passed": true,
+      "measured": -1.9910253223898167e-8
+    },
+    {
+      "name": "hpc.stage.8: disk bore clears its shaft",
+      "passed": true,
+      "measured": 0.014999995227168994
+    },
+    {
+      "name": "hpc.stage.8: stator inner span clears rotor hub",
+      "passed": true,
+      "measured": 0.01799997382143531
+    },
+    {
+      "name": "hpc.stage.8: full rotor airfoil stays inside the intended annulus",
+      "passed": true,
+      "measured": -2.4388877029046796e-8
+    },
+    {
+      "name": "hpc.stage.9: disk bore clears its shaft",
+      "passed": true,
+      "measured": 0.014999995227168994
+    },
+    {
+      "name": "hpc.stage.9: stator inner span clears rotor hub",
+      "passed": true,
+      "measured": 0.017999976996728728
+    },
+    {
+      "name": "hpc.stage.9: full rotor airfoil stays inside the intended annulus",
+      "passed": true,
+      "measured": -2.3310976648982518e-8
+    },
+    {
+      "name": "hpt.stage.1: disk bore clears its shaft",
+      "passed": true,
+      "measured": 0.014999995227168994
+    },
+    {
+      "name": "hpt.stage.1: stator inner span clears rotor hub",
+      "passed": true,
+      "measured": 0.017999974279349684
+    },
+    {
+      "name": "hpt.stage.1: full rotor airfoil stays inside the intended annulus",
+      "passed": true,
+      "measured": -2.5054630869991712e-8
+    },
+    {
+      "name": "hpt.stage.2: disk bore clears its shaft",
+      "passed": true,
+      "measured": 0.014999995227168994
+    },
+    {
+      "name": "hpt.stage.2: stator inner span clears rotor hub",
+      "passed": true,
+      "measured": 0.017999974279349684
+    },
+    {
+      "name": "hpt.stage.2: full rotor airfoil stays inside the intended annulus",
+      "passed": true,
+      "measured": -2.5054630869991712e-8
+    },
+    {
+      "name": "lpt.stage.1: disk bore clears its shaft",
+      "passed": true,
+      "measured": 0.024999995411521245
+    },
+    {
+      "name": "lpt.stage.1: stator inner span clears rotor hub",
+      "passed": true,
+      "measured": 0.017999976450873534
+    },
+    {
+      "name": "lpt.stage.1: full rotor airfoil stays inside the intended annulus",
+      "passed": true,
+      "measured": -2.5815932114259255e-8
+    },
+    {
+      "name": "lpt.stage.2: disk bore clears its shaft",
+      "passed": true,
+      "measured": 0.024999995411521245
+    },
+    {
+      "name": "lpt.stage.2: stator inner span clears rotor hub",
+      "passed": true,
+      "measured": 0.017999977148189183
+    },
+    {
+      "name": "lpt.stage.2: full rotor airfoil stays inside the intended annulus",
+      "passed": true,
+      "measured": -2.1714833264852018e-8
+    },
+    {
+      "name": "lpt.stage.3: disk bore clears its shaft",
+      "passed": true,
+      "measured": 0.024999995411521245
+    },
+    {
+      "name": "lpt.stage.3: stator inner span clears rotor hub",
+      "passed": true,
+      "measured": 0.017999979045149994
+    },
+    {
+      "name": "lpt.stage.3: full rotor airfoil stays inside the intended annulus",
+      "passed": true,
+      "measured": -2.155107181600613e-8
+    },
+    {
+      "name": "lpt.stage.4: disk bore clears its shaft",
+      "passed": true,
+      "measured": 0.024999995411521245
+    },
+    {
+      "name": "lpt.stage.4: stator inner span clears rotor hub",
+      "passed": true,
+      "measured": 0.017999973395564972
+    },
+    {
+      "name": "lpt.stage.4: full rotor airfoil stays inside the intended annulus",
+      "passed": true,
+      "measured": -2.686692701647786e-8
+    },
+    {
+      "name": "lpt.stage.5: disk bore clears its shaft",
+      "passed": true,
+      "measured": 0.024999995411521245
+    },
+    {
+      "name": "lpt.stage.5: stator inner span clears rotor hub",
+      "passed": true,
+      "measured": 0.017999975949922975
+    },
+    {
+      "name": "lpt.stage.5: full rotor airfoil stays inside the intended annulus",
+      "passed": true,
+      "measured": -1.7361963589035412e-8
+    },
+    {
+      "name": "lpt.stage.6: disk bore clears its shaft",
+      "passed": true,
+      "measured": 0.024999995411521245
+    },
+    {
+      "name": "lpt.stage.6: stator inner span clears rotor hub",
+      "passed": true,
+      "measured": 0.017999973921820178
+    },
+    {
+      "name": "lpt.stage.6: full rotor airfoil stays inside the intended annulus",
+      "passed": true,
+      "measured": -2.568306350925198e-8
+    },
+    {
+      "name": "Full explode and four mid-flight reversals stay continuous",
+      "passed": true,
+      "measured": 0.25099544968004206
+    },
+    {
+      "name": "Every component returns to its exact original local mount",
+      "passed": true,
+      "measured": 3443
+    },
+    {
+      "name": "All component identities survive every transition",
+      "passed": true,
+      "measured": 3443
+    }
+  ],
+  "problems": [],
+  "scope": "Actual rendered mesh radial envelopes, disk/shaft and rotor/stator mounting clearances, finite/continuous transform paths and exact restoration. This is not an exhaustive triangle-intersection proof of every arbitrary detached-part orientation. Hardware contacts and root attachments are illustrative.",
+  "result": "passed"
+}

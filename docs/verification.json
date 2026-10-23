@@ -1,0 +1,118 @@
+{
+  "date": "2026-10-23T15:40:55.924Z",
+  "url": "http://127.0.0.1:4173",
+  "viewports": [
+    "1600×1000",
+    "390×844"
+  ],
+  "browser": "Chromium / Playwright; Browser plugin not available",
+  "results": [
+    {
+      "name": "page identity, real WebGL canvas, meaningful UI and no error overlay",
+      "status": "passed"
+    },
+    {
+      "name": "assembled mode restores every exterior shell and cutaway returns to the same assembly",
+      "status": "passed"
+    },
+    {
+      "name": "search, assembly selection and prerequisite explanation work",
+      "status": "passed"
+    },
+    {
+      "name": "remove spinner, detach an individual fan blade, rotate it and return it exactly",
+      "status": "passed"
+    },
+    {
+      "name": "real canvas click identifies geometry; double-click isolates the same part",
+      "status": "passed"
+    },
+    {
+      "name": "front, side, rear cameras and orbit dragging move the real camera",
+      "status": "passed"
+    },
+    {
+      "name": "explode all shows separated complete assemblies and operation is interlocked",
+      "status": "passed"
+    },
+    {
+      "name": "startup, throttle, airflow and readouts use one coherent engine model",
+      "status": "passed"
+    },
+    {
+      "name": "detaching while running freezes both spools, disables flow and blocks restart",
+      "status": "passed"
+    },
+    {
+      "name": "internal stage removal respects casing and shaft dependencies and exposes high-detail geometry",
+      "status": "passed"
+    },
+    {
+      "name": "close inspection of an individual fan blade retains its true curved volume",
+      "status": "passed"
+    },
+    {
+      "name": "visibility hides the selected real component and restores it",
+      "status": "passed"
+    },
+    {
+      "name": "reference dialog and keyboard controls are usable",
+      "status": "passed"
+    },
+    {
+      "name": "390px responsive view has no horizontal overflow, and both drawers work",
+      "status": "passed"
+    },
+    {
+      "name": "No application console errors",
+      "status": "passed"
+    }
+  ],
+  "diagnostics": {
+    "parts": 3443,
+    "pixelRatio": 0.85,
+    "softwareRenderer": true,
+    "renderCpuMs": 6.600000000093132,
+    "frameRateLimit": 10,
+    "gpuBackpressure": true,
+    "targetFps": 60,
+    "drawCalls": 420,
+    "triangles": 448238,
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "frames": 271
+  },
+  "errors": [],
+  "warnings": [
+    "[.WebGL-0x36bc00175c00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x36bc00175c00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+  ],
+  "note": "Cloud Chromium uses software rendering. Hardware 60 FPS is a target and has not been established by this run.",
+  "finalVisualChecks": {
+    "date": "2026-10-23T15:50:06.110Z",
+    "nativeViewport": "1586×992",
+    "mobileViewport": "390×844",
+    "mobileFraming": {
+      "left": -0.810147884366006,
+      "right": 0.6417028151569828,
+      "overflow": false
+    },
+    "coherentStoppedReadouts": true,
+    "requiredScreenshotsRefreshed": true,
+    "diagnostics": {
+      "parts": 3443,
+      "pixelRatio": 0.85,
+      "softwareRenderer": true,
+      "renderCpuMs": 5,
+      "frameRateLimit": 10,
+      "gpuBackpressure": true,
+      "targetFps": 60,
+      "drawCalls": 434,
+      "triangles": 445742,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "frames": 34
+    },
+    "componentIsolation": "passed: blade, combustor liner, accessory gearbox; ancestor geometry hidden",
+    "intermediateExplosion": "captured actual 25% and 60% controller poses",
+    "completed": "2026-10-23T15:50:09.682Z"
+  }
+}
