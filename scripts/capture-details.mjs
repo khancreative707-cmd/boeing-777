@@ -3,7 +3,7 @@ import { spawn } from 'node:child_process';
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 const errors = [];
-const url = process.env.APP_URL || 'http://127.0.0.1:4174';
+const url = process.env.APP_URL || 'http://127.0.0.1:4174/?view=engine';
 let server, browser;
 try {
   if (!process.env.APP_URL) {

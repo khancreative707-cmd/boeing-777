@@ -4,7 +4,10 @@ import { ChevronRight, ChevronDown, Eye, EyeOff, Search, Box, Layers3, X } from 
 export const AssemblyTree = memo(function AssemblyTree({ lab, selected, version, onClose }) {
   const [query, setQuery] = useState('');
   const deferred = useDeferredValue(query);
-  const [expanded, setExpanded] = useState(() => new Set(['ge90', 'fan']));
+  const treeRoot = lab.state.inspectionRoot || lab.rootId || 'ge90';
+  const [expanded, setExpanded] = useState(
+    () => new Set(['ge90', 'fan', 'aircraft', 'aircraft.wings', 'aircraft.engines']),
+  );
   const nodes = useMemo(() => new Map(lab.parts.map((p) => [p.id, p])), [lab.parts]);
   const rows = useMemo(() => {
     if (deferred.trim()) {
@@ -20,11 +23,12 @@ export const AssemblyTree = memo(function AssemblyTree({ lab, selected, version,
       const p = nodes.get(id);
       if (!p) return;
       out.push({ part: p, depth });
-      if (expanded.has(id)) p.children.forEach((child) => walk(child, depth + 1));
+      if (expanded.has(id) || id === treeRoot)
+        p.children.forEach((child) => walk(child, depth + 1));
     }
-    walk('ge90', 0);
+    walk(treeRoot, 0);
     return out;
-  }, [nodes, expanded, deferred, lab.parts]);
+  }, [nodes, expanded, deferred, lab.parts, treeRoot]);
   function toggle(id) {
     setExpanded((prev) => {
       const next = new Set(prev);
@@ -80,10 +84,38 @@ export const AssemblyTree = memo(function AssemblyTree({ lab, selected, version,
         ) : null}
       </label>
       <div className="tree-meta">
-        <span>{query ? 'SEARCH RESULTS' : 'ENGINE HIERARCHY'}</span>
+        <span>
+          {query
+            ? 'SEARCH RESULTS'
+            : lab.kind === 'aircraft'
+              ? 'AIRCRAFT HIERARCHY'
+              : 'ENGINE HIERARCHY'}
+        </span>
         <span>{query ? rows.length : '01'}</span>
       </div>
-      <div className="tree-scroll" role="tree" aria-label="Engine components">
+      {lab.kind === 'aircraft' ? (
+        <div className="aircraft-layerbar" aria-label="Aircraft layers">
+          {[
+            ['skin', 'Skin'],
+            ['structure', 'Structure'],
+            ['interior', 'Interior'],
+            ['systems', 'Systems'],
+          ].map(([key, label]) => (
+            <button
+              key={key}
+              aria-pressed={lab.state.layers[key]}
+              onClick={() => lab.setLayer(key, !lab.state.layers[key])}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      ) : null}
+      <div
+        className="tree-scroll"
+        role="tree"
+        aria-label={lab.kind === 'aircraft' ? 'Aircraft components' : 'Engine components'}
+      >
         {rows.length ? (
           rows.map(({ part: p, depth }, index) => (
             <div
@@ -143,10 +175,31 @@ export const AssemblyTree = memo(function AssemblyTree({ lab, selected, version,
           </div>
         )}
       </div>
+      <div className="assembly-spread">
+        <label htmlFor="assembly-spread">
+          <span>Assembly spread</span>
+          <output>{Math.round(lab.state.explosion * 100)}%</output>
+        </label>
+        <input
+          id="assembly-spread"
+          aria-label="Assembly spread"
+          type="range"
+          min="0"
+          max="100"
+          value={Math.round(lab.state.explosion * 100)}
+          onChange={(e) => lab.setExplosion(Number(e.target.value) / 100)}
+        />
+        <div>
+          <span>Assembled</span>
+          <span>Exploded</span>
+        </div>
+      </div>
       <div className="assembly-foot">
         <span className="small-orbit" />
         <p>
-          One engine. Two independent spools.
+          {lab.kind === 'aircraft'
+            ? 'One aircraft. Connected systems.'
+            : 'One engine. Two independent spools.'}
           <br />
           <strong>Explore from the outside in.</strong>
         </p>

@@ -1809,3 +1809,122 @@ input[type='range'] {
     font-size: 11px;
   }
 }
+
+.assembly-spread {
+  margin: 0 20px;
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+}
+.assembly-spread label,
+.assembly-spread > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.assembly-spread label {
+  font-size: 11px;
+  margin-bottom: 12px;
+}
+.assembly-spread output {
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--accent);
+}
+.assembly-spread input {
+  width: 100%;
+  accent-color: var(--accent);
+  cursor: ew-resize;
+}
+.assembly-spread > div {
+  margin-top: 7px;
+  font-size: 9px;
+  color: var(--muted);
+}
+.guided-tour {
+  padding: 15px;
+  margin: 0 0 20px;
+  border: 1px solid #ddc6b5;
+  border-radius: 6px;
+  background: #f6eee6;
+  animation: tour-enter 220ms ease-out;
+}
+.tour-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  font:
+    9px 'IBM Plex Mono',
+    monospace;
+  color: #956444;
+}
+.tour-progress {
+  display: flex;
+  gap: 5px;
+  margin: 8px 0 16px;
+}
+.tour-progress button {
+  height: 16px;
+  flex: 1;
+  position: relative;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.tour-progress button::after {
+  content: '';
+  display: block;
+  height: 3px;
+  background: #dbcbbd;
+  border-radius: 2px;
+}
+.tour-progress button[aria-current]::after {
+  background: var(--accent);
+}
+.guided-tour h3 {
+  font-size: 16px;
+  line-height: 1.4;
+  margin-bottom: 9px;
+  letter-spacing: -0.3px;
+}
+.guided-tour p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #66675b;
+}
+.tour-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 16px;
+}
+.tour-actions .button {
+  padding: 7px 9px;
+  font-size: 10px;
+  background: #faf8f4;
+}
+@keyframes tour-enter {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (max-width: 760px) {
+  .tour-launch {
+    padding: 7px 8px;
+  }
+  .header-right {
+    gap: 8px;
+  }
+  .guided-tour {
+    margin-top: 8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .guided-tour {
+    animation: none;
+  }
+}

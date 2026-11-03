@@ -3,7 +3,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { applySpoolTransforms, applyVariableStators } from '../engine/mechanics.js';
 import { FlowEffects } from './effects.js';
-import { smooth } from '../../.agents/skills/anatomy/kit/gl.mjs';
+import { cameraFlightPosition } from './camera-motion.js';
+import { AircraftEffects } from '../aircraft/effects.js';
 
 const VIEWS = {
   Orbit: { position: [-5.8, 4.1, 7.2], target: [0.35, 1.85, 0] },
@@ -49,7 +50,7 @@ export class EngineViewer {
     this.renderer.shadowMap.autoUpdate = false;
     this.renderer.domElement.setAttribute(
       'aria-label',
-      'Interactive GE90-115B engine. Drag to orbit, scroll to zoom; click a part to select.',
+      `Interactive ${lab.kind === 'aircraft' ? 'Boeing 777-300ER aircraft' : 'GE90-115B engine'}. Drag to orbit, scroll to zoom; click a part to select.`,
     );
     this.renderer.domElement.setAttribute('role', 'img');
     element.append(this.renderer.domElement);
@@ -64,10 +65,10 @@ export class EngineViewer {
     pmrem.dispose();
     this.scene.add(lab.root);
     this.scene.add(new THREE.HemisphereLight('#ffffff', '#a9a99c', 1.25));
-    const key = new THREE.DirectionalLight('#fff8ee', 3.1);
-    key.position.set(-3, 8, 5);
+    const key = new THREE.DirectionalLight('#fff8ee', lab.kind === 'aircraft' ? 2.25 : 3.1);
+    key.position.set(...(lab.kind === 'aircraft' ? [-35, 80, 42] : [-3, 8, 5]));
     key.castShadow = true;
-    const shadowSize = this.softwareRenderer ? 768 : 2048;
+    const shadowSize = this.softwareRenderer ? (lab.kind === 'aircraft' ? 1024 : 768) : 2048;
     key.shadow.mapSize.set(shadowSize, shadowSize);
     Object.assign(key.shadow.camera, {
       left: -7,
@@ -77,13 +78,26 @@ export class EngineViewer {
       near: 0.5,
       far: 25,
     });
+    if (lab.kind === 'aircraft')
+      Object.assign(key.shadow.camera, {
+        left: -65,
+        right: 65,
+        top: 60,
+        bottom: -60,
+        near: 1,
+        far: 230,
+      });
     key.shadow.bias = -0.00045;
     key.shadow.normalBias = 0.025;
+    if (lab.kind === 'aircraft') {
+      key.shadow.normalBias = 0.2;
+      key.shadow.bias = -0.0011;
+    }
     key.shadow.radius = 5;
     key.shadow.blurSamples = 8;
     this.scene.add(key);
     const fill = new THREE.DirectionalLight('#e3edff', 0.8);
-    fill.position.set(4, 4, -5);
+    fill.position.set(...(lab.kind === 'aircraft' ? [35, 35, -40] : [4, 4, -5]));
     this.scene.add(fill);
     const ground = new THREE.Mesh(
       new THREE.PlaneGeometry(200, 200),
@@ -94,14 +108,14 @@ export class EngineViewer {
     ground.receiveShadow = true;
     this.scene.add(ground);
     this.ground = ground;
-    this.camera = new THREE.PerspectiveCamera(35, 1, 0.04, 150);
-    this.camera.position.fromArray(VIEWS.Orbit.position);
+    this.camera = new THREE.PerspectiveCamera(35, 1, 0.04, lab.kind === 'aircraft' ? 900 : 150);
+    this.camera.position.fromArray((lab.views || VIEWS).Orbit.position);
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.controls.target.fromArray(VIEWS.Orbit.target);
+    this.controls.target.fromArray((lab.views || VIEWS).Orbit.target);
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.09;
     this.controls.minDistance = 0.55;
-    this.controls.maxDistance = 40;
+    this.controls.maxDistance = lab.kind === 'aircraft' ? 440 : 40;
     this.controls.maxPolarAngle = Math.PI * 0.96;
     this.controls.screenSpacePanning = true;
     this.controls.zoomToCursor = true;
@@ -116,21 +130,25 @@ export class EngineViewer {
       'start',
       (this.onControlStart = () => {
         this.cameraTransition = null;
+        if (lab.state.autoOrbit) lab.setAutoOrbit(false);
+        lab.emit({ cameraView: 'Custom' });
       }),
     );
-    lab.registry.visibilityFilter = (p) => {
-      const ancestors = lab.registry.ancestors(p.id);
-      if (p.detached || ancestors.some((a) => a.detached)) return true;
-      return !(
-        lab.state.cutaway &&
-        !lab.state.isolated &&
-        !lab.state.exploded &&
-        (p.cutaway || ancestors.some((a) => a.cutaway))
-      );
-    };
+    if (!lab.registry.visibilityFilter)
+      lab.registry.visibilityFilter = (p) => {
+        const ancestors = lab.registry.ancestors(p.id);
+        if (p.detached || ancestors.some((a) => a.detached)) return true;
+        return !(
+          lab.state.cutaway &&
+          (!lab.state.isolated || lab.state.tourStep !== null) &&
+          !lab.state.exploded &&
+          (p.cutaway || ancestors.some((a) => a.cutaway))
+        );
+      };
     lab.registry.visibilityDirty = true;
     lab.registry.dirty = true;
-    this.effects = new FlowEffects(this.scene);
+    this.effects =
+      lab.kind === 'aircraft' ? new AircraftEffects(this.scene, lab) : new FlowEffects(this.scene);
     this.raycaster = new THREE.Raycaster();
     this.pointer = new THREE.Vector2();
     this.down = null;
@@ -144,7 +162,11 @@ export class EngineViewer {
     this.observer.observe(element);
     this.motion = matchMedia('(prefers-reduced-motion: reduce)');
     this.onMotion = () => {
-      lab.emit({ reduced: this.motion.matches });
+      this.controls.enableDamping = !this.motion.matches;
+      lab.emit({
+        reduced: this.motion.matches,
+        ...(this.motion.matches ? { autoOrbit: false } : {}),
+      });
     };
     this.motion.addEventListener('change', this.onMotion);
     this.onMotion();
@@ -240,7 +262,10 @@ export class EngineViewer {
     if (!w || !h) return;
     this.renderer.setSize(w, h);
     this.camera.aspect = w / h;
-    const framingScale = Math.max(1, 1.45 / this.camera.aspect),
+    const framingScale = Math.max(
+        1,
+        (this.lab.kind === 'aircraft' ? 1.1 : 1.45) / this.camera.aspect,
+      ),
       previousScale = this.framingScale || 1;
     if (Math.abs(framingScale - previousScale) > 0.001) {
       const offset = this.camera.position
@@ -310,7 +335,9 @@ export class EngineViewer {
     p.object.add(this.hoverOutline);
   }
   setView(name) {
-    const v = VIEWS[name] || VIEWS.Orbit;
+    this.lab.emit({ cameraView: name, autoOrbit: false });
+    const views = this.lab.views || VIEWS;
+    const v = views[name] || views.Orbit;
     const target = new THREE.Vector3(...v.target),
       position = new THREE.Vector3(...v.position);
     position
@@ -330,6 +357,7 @@ export class EngineViewer {
     this.wake();
   }
   focus(id) {
+    this.lab.emit({ cameraView: 'Custom', autoOrbit: false });
     const p = this.lab.registry.get(id);
     if (!p) return;
     this.lab.root.updateMatrixWorld(true);
@@ -347,7 +375,7 @@ export class EngineViewer {
     this.transition(
       center
         .clone()
-        .addScaledVector(dir, Math.max(0.8, size * 1.5))
+        .addScaledVector(dir, Math.max(0.8, size * 1.5) * Math.max(1, 1 / this.camera.aspect))
         .toArray(),
       center.toArray(),
     );
@@ -403,8 +431,9 @@ export class EngineViewer {
     if (this.cameraTransition) {
       const t = this.cameraTransition;
       t.time += dt;
-      const u = lab.state.reduced ? 1 : smooth(0, 1, Math.min(1, t.time / 0.7));
-      this.camera.position.lerpVectors(t.from, t.to, u);
+      const progress = lab.state.reduced ? 1 : Math.min(1, t.time / 0.7);
+      const u = progress ** 3 * (progress * (progress * 6 - 15) + 10);
+      this.camera.position.copy(cameraFlightPosition(t, progress));
       this.controls.target.lerpVectors(t.startTarget, t.endTarget, u);
       cameraMoving = true;
       if (u === 1) this.cameraTransition = null;
@@ -434,7 +463,9 @@ export class EngineViewer {
       }
     }
     this.effects.update(dt, lab.simulation, lab.state);
-    const controlsMoving = this.controls.update();
+    this.controls.autoRotate = lab.state.autoOrbit && !lab.state.reduced && !this.cameraTransition;
+    this.controls.autoRotateSpeed = 0.55;
+    const controlsMoving = this.controls.update(dt);
     const wantsRender = this.dirty || moving || running || cameraMoving || controlsMoving;
     const renderDue =
       !this.softwareRenderer || !this.lastRenderTime || now - this.lastRenderTime >= 100;
@@ -474,6 +505,7 @@ export class EngineViewer {
       moving ||
       cameraMoving ||
       controlsMoving ||
+      this.controls.autoRotate ||
       (running && !lab.simulation.interlocked) ||
       this.dirty
     )

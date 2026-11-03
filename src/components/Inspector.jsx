@@ -9,6 +9,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { PartPreview } from './PartPreview.jsx';
+import { GuidedTour } from './GuidedTour.jsx';
 export function Inspector({ lab, state, onClose }) {
   const p = lab.registry.get(state.selected),
     parent = lab.registry.get(p?.parent);
@@ -45,6 +46,7 @@ export function Inspector({ lab, state, onClose }) {
         </button>
       </div>
       <div className="inspector-scroll">
+        <GuidedTour lab={lab} step={state.tourStep} />
         <div className="part-illustration">
           <PartPreview lab={lab} id={p.id} />
           <span>
@@ -55,6 +57,19 @@ export function Inspector({ lab, state, onClose }) {
         <h2>{p.name}</h2>
         <p className="part-id">{p.id.toUpperCase()}</p>
         <p className="purpose">{p.purpose}</p>
+        {lab.kind === 'aircraft' && p.operation ? (
+          <button className="button operate-part" onClick={() => lab.operatePart(p.id)}>
+            Operate component · {p.operation.replace(':', ' ')}
+          </button>
+        ) : null}
+        {lab.kind === 'aircraft' && p.id.startsWith('aircraft.engines.') && !state.engineFocus ? (
+          <button
+            className="button operate-part"
+            onClick={() => lab.inspectEngine(p.id.includes('.left') ? 'left' : 'right', p.id)}
+          >
+            Enter engine inspection
+          </button>
+        ) : null}
         <dl className="properties">
           <div>
             <dt>Material</dt>
@@ -64,14 +79,20 @@ export function Inspector({ lab, state, onClose }) {
             <dt>Parent</dt>
             <dd>
               <button onClick={() => parent && lab.select(parent.id)} disabled={!parent}>
-                {parent?.name || 'Engine root'}
+                {parent?.name || (lab.kind === 'aircraft' ? 'Aircraft root' : 'Engine root')}
                 {parent ? <ChevronRight size={11} /> : null}
               </button>
             </dd>
           </div>
           <div>
-            <dt>Spool</dt>
-            <dd>{spool ? `${spool === 'LP' ? 'Low' : 'High'} pressure` : 'Stationary'}</dd>
+            <dt>{lab.kind === 'aircraft' && !p.engineSide ? 'Layer' : 'Spool'}</dt>
+            <dd>
+              {lab.kind === 'aircraft' && !p.engineSide
+                ? p.layer || lab.registry.ancestors(p.id).find((a) => a.layer)?.layer || 'Exterior'
+                : spool
+                  ? `${spool === 'LP' ? 'Low' : 'High'} pressure`
+                  : 'Stationary'}
+            </dd>
           </div>
           <div>
             <dt>Status</dt>
@@ -94,7 +115,11 @@ export function Inspector({ lab, state, onClose }) {
               onClick={() => lab.isolate()}
             >
               <Scan size={14} />
-              {state.isolated ? 'Show engine' : 'Isolate'}
+              {state.isolated
+                ? lab.kind === 'aircraft'
+                  ? 'Show aircraft'
+                  : 'Show engine'
+                : 'Isolate'}
             </button>
             <button className="button" onClick={() => lab.viewer?.focus(p.id)}>
               <ArrowDownToLine size={14} />
@@ -105,7 +130,7 @@ export function Inspector({ lab, state, onClose }) {
         {p.detached ? (
           <div className="inspect-rotation">
             <h3>INSPECT DETACHED PART</h3>
-            <p>Rotate independently of the engine.</p>
+            <p>Rotate independently of the {lab.kind === 'aircraft' ? 'aircraft' : 'engine'}.</p>
             <div>
               {['x', 'y', 'z'].map((axis) => (
                 <div className="rotation-axis" key={axis}>

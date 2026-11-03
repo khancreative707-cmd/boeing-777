@@ -1,0 +1,529 @@
+.exhibit-loading {
+  height: 100dvh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 18px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.aircraft-laboratory .header-engine {
+  font-size: 14px;
+}
+.aircraft-laboratory .header-right {
+  gap: 14px;
+}
+.exhibit-tabs {
+  display: flex;
+  gap: 4px;
+}
+.exhibit-tabs button {
+  padding: 7px 14px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-size: 11px;
+}
+.exhibit-tabs button.active {
+  color: var(--accent);
+  border-color: #c9825d;
+  background: #faf4ed;
+}
+.aircraft-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 31px;
+  padding: 0 23px;
+  border-bottom: 1px solid var(--line);
+  font-size: 10px;
+  background: var(--panel);
+  gap: 12px;
+}
+.aircraft-navigation nav,
+.aircraft-navigation nav span {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.aircraft-navigation nav {
+  overflow: hidden;
+  white-space: nowrap;
+}
+.aircraft-navigation button {
+  font-size: 10px;
+  padding: 4px 0;
+}
+.aircraft-navigation nav button:hover {
+  color: var(--accent);
+}
+.aircraft-navigation > span {
+  font: 8px var(--mono);
+  letter-spacing: 0.9px;
+  color: var(--muted);
+}
+.engine-side-picker {
+  display: flex;
+  gap: 10px;
+  white-space: nowrap;
+}
+.engine-side-picker button[aria-pressed='true'] {
+  color: var(--accent);
+}
+.aircraft-layerbar {
+  margin: 0 20px 8px;
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.aircraft-layerbar button {
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 5px 7px;
+  color: #8c9187;
+  font-size: 9px;
+}
+.aircraft-layerbar button[aria-pressed='true'] {
+  background: #eeeee7;
+  color: #424c42;
+  border-color: #c4c8bb;
+}
+.aircraft-viewport .viewport-heading {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 17px;
+  z-index: 2;
+  pointer-events: none;
+}
+.aircraft-viewport .viewport-heading nav {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
+}
+.aircraft-viewport .viewport-heading h1 {
+  font-size: 32px;
+  letter-spacing: -1.25px;
+}
+.aircraft-viewport .viewport-heading p {
+  font-size: 12px;
+}
+.aircraft-viewport .camera-views select {
+  font-size: 10px;
+  padding: 7px 6px;
+  border: 1px solid #d0d3c9;
+  background: #f7f6f2;
+  border-radius: 3px;
+  max-width: 95px;
+}
+.aircraft-viewport .viewport-canvas {
+  inset: 0;
+}
+.aircraft-viewport .instrument:last-child strong {
+  font-size: 21px;
+}
+.aircraft-viewport .viewport-notice {
+  max-width: 75%;
+  font-size: 10px;
+}
+.aircraft-laboratory .assembly-foot {
+  padding: 12px 1px;
+}
+.aircraft-laboratory .assembly-spread {
+  padding: 13px 0;
+}
+.aircraft-laboratory .isolation-back {
+  top: 157px;
+}
+.operate-part {
+  width: 100%;
+  margin-bottom: 16px;
+  border-color: #c49a7b;
+  background: #f6eee5;
+  color: #8d5f3e;
+  font-size: 10px;
+}
+.aircraft-controls {
+  gap: 15px;
+  justify-content: space-between;
+  min-height: 76px;
+  height: auto;
+  padding: 14px 20px;
+  position: relative;
+  z-index: 5;
+  flex-shrink: 0;
+}
+.engine-command-pair {
+  display: flex;
+  gap: 15px;
+}
+.engine-command {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.engine-command .button {
+  padding: 8px 9px;
+  gap: 5px;
+  font-size: 10px;
+  min-width: 74px;
+}
+.engine-command input {
+  width: 66px;
+}
+.engine-command output {
+  font: 11px var(--mono);
+  width: 34px;
+  text-align: right;
+}
+.engine-command output small {
+  font-size: 8px;
+  color: var(--muted);
+  margin-left: 2px;
+}
+.aircraft-flaps {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  font-size: 10px;
+}
+.aircraft-flaps input {
+  width: 74px;
+}
+.aircraft-flaps output {
+  font: 11px var(--mono);
+  width: 23px;
+}
+.aircraft-controls > .button {
+  padding: 8px 10px;
+  font-size: 10px;
+}
+.aircraft-controls .toggle-control {
+  gap: 7px;
+  font-size: 10px;
+  padding: 4px 0;
+}
+.aircraft-controls .switch {
+  width: 30px;
+  height: 18px;
+}
+.aircraft-controls .switch i {
+  width: 14px;
+  height: 14px;
+}
+.aircraft-controls .enabled .switch i {
+  transform: translateX(12px);
+}
+.aircraft-reset {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.aircraft-reset .button {
+  font-size: 10px;
+  padding: 8px 10px;
+}
+.aircraft-more-controls {
+  position: relative;
+  flex-shrink: 0;
+}
+.aircraft-more-controls summary {
+  list-style: none;
+  font-size: 10px;
+  padding: 8px 9px;
+}
+.aircraft-more-controls summary::-webkit-details-marker {
+  display: none;
+}
+.mechanism-popover {
+  position: absolute;
+  bottom: calc(100% + 14px);
+  right: 0;
+  width: 285px;
+  max-height: 65dvh;
+  overflow: auto;
+  background: #faf9f6;
+  border: 1px solid #d3d5cb;
+  box-shadow: 0 12px 45px #30362b1c;
+  border-radius: 5px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.mechanism-popover h3 {
+  font-size: 16px;
+  letter-spacing: -0.4px;
+}
+.mechanism-popover p {
+  font-size: 10px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+.mechanism-popover label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  gap: 12px;
+}
+.mechanism-popover label input {
+  width: 120px;
+}
+.mechanism-popover label select {
+  width: 72px;
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--panel);
+  color: var(--ink);
+}
+.mechanism-popover .toggle-control {
+  justify-content: space-between;
+}
+.mechanism-popover .button {
+  font-size: 11px;
+  justify-content: center;
+}
+.aircraft-laboratory .status-bar > div {
+  max-width: 70%;
+  white-space: nowrap;
+  overflow: hidden;
+}
+@media (min-width: 1700px) {
+  .aircraft-viewport .viewport-heading h1 {
+    font-size: 36px;
+  }
+  .aircraft-controls {
+    gap: 22px;
+    padding: 16px 26px;
+  }
+  .engine-command input {
+    width: 96px;
+  }
+  .aircraft-flaps input {
+    width: 100px;
+  }
+}
+@media (max-width: 1350px) {
+  .aircraft-laboratory .header-engine {
+    display: none;
+  }
+  .aircraft-controls {
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    padding: 10px 17px;
+    min-height: 91px;
+  }
+  .engine-command-pair {
+    gap: 12px;
+  }
+  .engine-command input {
+    width: 58px;
+  }
+  .aircraft-viewport .viewport-heading h1 {
+    font-size: 28px;
+  }
+  .aircraft-viewport .viewport-heading {
+    gap: 10px;
+  }
+  .aircraft-viewport .camera-views button {
+    padding: 6px 8px;
+    font-size: 10px;
+  }
+  .aircraft-viewport .camera-views select {
+    padding: 6px;
+    font-size: 9px;
+  }
+  .aircraft-reset {
+    margin-left: auto;
+  }
+}
+@media (max-width: 1100px) {
+  .aircraft-controls {
+    min-height: 100px;
+  }
+  .aircraft-viewport .viewport-heading h1 {
+    font-size: 27px;
+  }
+  .aircraft-laboratory .header-right {
+    gap: 8px;
+  }
+  .aircraft-navigation > span {
+    display: none;
+  }
+  .aircraft-controls .engine-command output {
+    display: none;
+  }
+  .aircraft-viewport .isolation-back {
+    top: 150px;
+  }
+}
+@media (max-width: 760px) {
+  .aircraft-laboratory .wordmark strong,
+  .aircraft-laboratory .lab-name {
+    display: none;
+  }
+  .aircraft-laboratory .header-right {
+    gap: 5px;
+  }
+  .aircraft-laboratory .header-right .tour-launch {
+    padding: 6px;
+  }
+  .aircraft-laboratory .reference-button span {
+    display: none;
+  }
+  .aircraft-laboratory .exhibit-tabs button {
+    font-size: 9px;
+    padding: 6px 8px;
+  }
+  .aircraft-navigation {
+    min-height: 27px;
+    padding: 0 15px;
+  }
+  .aircraft-navigation nav button {
+    font-size: 9px;
+  }
+  .aircraft-navigation nav span:nth-child(n + 3) {
+    display: none;
+  }
+  .engine-side-picker button {
+    font-size: 8px;
+  }
+  .aircraft-viewport .viewport-heading {
+    top: 17px;
+    left: 16px;
+    right: 16px;
+    gap: 9px;
+    align-items: flex-start;
+    text-align: left;
+  }
+  .aircraft-viewport .viewport-heading h1 {
+    font-size: 24px;
+  }
+  .aircraft-viewport .viewport-heading p {
+    font-size: 9px;
+  }
+  .aircraft-viewport .viewport-heading nav {
+    justify-content: flex-start;
+  }
+  .aircraft-viewport .camera-views button:first-child {
+    display: inline-flex;
+  }
+  .aircraft-viewport .camera-views button {
+    padding: 5px 7px;
+    font-size: 9px;
+  }
+  .aircraft-viewport .camera-views select {
+    font-size: 9px;
+    max-width: 77px;
+  }
+  .aircraft-viewport .viewport-canvas {
+    inset: 50px 0 100px;
+  }
+  .aircraft-viewport .isolation-back {
+    top: 122px;
+    left: 17px;
+  }
+  .aircraft-viewport .viewport-bottom {
+    left: 16px;
+    right: 16px;
+    bottom: 10px;
+  }
+  .aircraft-viewport .instrument span {
+    font-size: 6px;
+    letter-spacing: 0.2px;
+  }
+  .aircraft-viewport .instrument strong {
+    font-size: 18px;
+  }
+  .aircraft-viewport .instrument:last-child strong {
+    font-size: 14px;
+  }
+  .aircraft-viewport .instruments p {
+    font-size: 6px;
+  }
+  .aircraft-viewport .viewport-notice {
+    bottom: 125px;
+    max-width: 90%;
+    font-size: 8px;
+  }
+  .aircraft-controls {
+    display: flex;
+    flex-direction: row;
+    gap: 9px 12px;
+    padding: 10px 14px;
+    min-height: 133px;
+    justify-content: flex-start;
+  }
+  .aircraft-controls .engine-command-pair {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 10px;
+  }
+  .aircraft-controls .engine-command {
+    flex: 1;
+    gap: 7px;
+  }
+  .aircraft-controls .engine-command .button {
+    min-width: 62px;
+    padding: 7px;
+    gap: 4px;
+  }
+  .aircraft-controls .engine-command input {
+    width: 75px;
+    flex: 1;
+    min-width: 30px;
+  }
+  .aircraft-controls .engine-command output {
+    display: none;
+  }
+  .aircraft-flaps {
+    gap: 7px;
+  }
+  .aircraft-flaps input {
+    width: 66px;
+  }
+  .aircraft-controls > .button {
+    font-size: 9px;
+    padding: 7px 8px;
+  }
+  .aircraft-controls .toggle-control {
+    font-size: 9px;
+    gap: 5px;
+  }
+  .aircraft-controls .aircraft-reset .button {
+    font-size: 9px;
+    padding: 7px;
+  }
+  .aircraft-reset {
+    margin-left: 0;
+  }
+  .aircraft-more-controls summary {
+    font-size: 9px;
+    padding: 7px;
+  }
+  .mechanism-popover {
+    position: fixed;
+    bottom: 160px;
+    right: 14px;
+    width: 280px;
+    max-height: 55dvh;
+  }
+  .aircraft-laboratory .status-bar > div {
+    max-width: 95%;
+  }
+  .aircraft-laboratory .motion-note {
+    display: none;
+  }
+  .aircraft-laboratory .aircraft-layerbar {
+    margin: 0 16px 8px;
+  }
+  .aircraft-laboratory .inspector-scroll {
+    padding: 0 18px 20px;
+  }
+}

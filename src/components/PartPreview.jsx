@@ -13,7 +13,16 @@ export function PartPreview({ lab, id }) {
     camera.lookAt(0, 0, 0);
     camera.updateMatrixWorld();
     const segments = [];
-    for (const p of lab.registry.descendants(id).slice(0, 180))
+    let candidates = lab.registry.descendants(id);
+    if (id === 'aircraft')
+      candidates = candidates.filter(
+        (p) =>
+          /^aircraft\.fuselage\.skin\./.test(p.id) ||
+          /^aircraft\.wings\.(left|right)\.(skin|raked-tip)/.test(p.id) ||
+          p.id.startsWith('aircraft.tail.') ||
+          p.id.includes('.exterior.nacelle.q'),
+      );
+    for (const p of candidates.slice(0, 180))
       for (const visual of p.visuals) {
         const geometry = visual.mesh.geometry;
         let edges = edgesCache.get(geometry.uuid);
@@ -25,19 +34,24 @@ export function PartPreview({ lab, id }) {
         }
         const matrix = inverse.clone().multiply(p.object.matrixWorld);
         const orient = camera.matrixWorldInverse.clone().multiply(matrix);
-        for (let i = 0; i < edges.count; i += 2) {
+        const stride = Math.max(1, Math.ceil(edges.count / 3000)) * 2;
+        for (let i = 0; i + 1 < edges.count; i += stride) {
           const a = new THREE.Vector3().fromBufferAttribute(edges, i).applyMatrix4(orient),
             b = new THREE.Vector3().fromBufferAttribute(edges, i + 1).applyMatrix4(orient);
           segments.push([a.x, -a.y, b.x, -b.y]);
         }
       }
     if (!segments.length) return '';
-    const xs = segments.flatMap((s) => [s[0], s[2]]),
-      ys = segments.flatMap((s) => [s[1], s[3]]),
-      minX = Math.min(...xs),
-      maxX = Math.max(...xs),
-      minY = Math.min(...ys),
-      maxY = Math.max(...ys);
+    let minX = Infinity,
+      maxX = -Infinity,
+      minY = Infinity,
+      maxY = -Infinity;
+    for (const [x, y, u, v] of segments) {
+      minX = Math.min(minX, x, u);
+      maxX = Math.max(maxX, x, u);
+      minY = Math.min(minY, y, v);
+      maxY = Math.max(maxY, y, v);
+    }
     const scale = Math.min(128 / Math.max(0.01, maxX - minX), 108 / Math.max(0.01, maxY - minY));
     const cx = (minX + maxX) / 2,
       cy = (minY + maxY) / 2;

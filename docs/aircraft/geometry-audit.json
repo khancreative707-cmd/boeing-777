@@ -1,0 +1,139 @@
+{
+  "date": "2026-11-03T08:53:09.372Z",
+  "model": "Boeing 777–300ER",
+  "componentCount": 11836,
+  "checks": [
+    {
+      "name": "All component IDs, parent edges and removal references resolve",
+      "passed": true,
+      "measured": 11836
+    },
+    {
+      "name": "Every drawn geometry vertex has a finite world transform",
+      "passed": true,
+      "measured": 11836
+    },
+    {
+      "name": "Actual pressure-shell mesh spans the 73.86 m reference envelope",
+      "passed": true,
+      "measured": {
+        "minimumX": -36.93000030517578,
+        "maximumX": 36.93000030517578
+      }
+    },
+    {
+      "name": "Actual wingtip geometry reaches the 64.8 m reference span",
+      "passed": true,
+      "measured": 64.82999999523163
+    },
+    {
+      "name": "Actual fin reaches the 18.5 m reference height",
+      "passed": true,
+      "measured": 18.5
+    },
+    {
+      "name": "Frame and stringer mesh vertices stay inside the pressure-shell inner surface",
+      "passed": true,
+      "measured": {
+        "minimumClearanceMetres": 0.013808661847471468
+      }
+    },
+    {
+      "name": "Parked cabin, cockpit and cargo mesh vertices fit inside the pressure shell",
+      "passed": true,
+      "measured": {
+        "minimumClearanceMetres": 0.004248867887986771
+      }
+    },
+    {
+      "name": "All cockpit display meshes sit ahead of the actual beveled panel face",
+      "passed": true,
+      "measured": 0.015499999597672343
+    },
+    {
+      "name": "Ten passenger and two cargo apertures pass rays through actual shell geometry",
+      "passed": true,
+      "measured": 12
+    },
+    {
+      "name": "Fourteen tire meshes meet the display ground within 3 cm",
+      "passed": true,
+      "measured": [
+        {
+          "id": "aircraft.gear.left.leg.truck.wheel.1.tire",
+          "lowestY": 0.01000001430511488
+        },
+        {
+          "id": "aircraft.gear.left.leg.truck.wheel.2.tire",
+          "lowestY": 0.01000001430511488
+        },
+        {
+          "id": "aircraft.gear.left.leg.truck.wheel.3.tire",
+          "lowestY": 0.01000001430511488
+        },
+        {
+          "id": "aircraft.gear.left.leg.truck.wheel.4.tire",
+          "lowestY": 0.01000001430511488
+        },
+        {
+          "id": "aircraft.gear.left.leg.truck.wheel.5.tire",
+          "lowestY": 0.01000001430511488
+        },
+        {
+          "id": "aircraft.gear.left.leg.truck.wheel.6.tire",
+          "lowestY": 0.01000001430511488
+        },
+        {
+          "id": "aircraft.gear.right.leg.truck.wheel.1.tire",
+          "lowestY": 0.01000001430511488
+        },
+        {
+          "id": "aircraft.gear.right.leg.truck.wheel.2.tire",
+          "lowestY": 0.01000001430511488
+        },
+        {
+          "id": "aircraft.gear.right.leg.truck.wheel.3.tire",
+          "lowestY": 0.01000001430511488
+        },
+        {
+          "id": "aircraft.gear.right.leg.truck.wheel.4.tire",
+          "lowestY": 0.01000001430511488
+        },
+        {
+          "id": "aircraft.gear.right.leg.truck.wheel.5.tire",
+          "lowestY": 0.01000001430511488
+        },
+        {
+          "id": "aircraft.gear.right.leg.truck.wheel.6.tire",
+          "lowestY": 0.01000001430511488
+        },
+        {
+          "id": "aircraft.gear.nose.leg.truck.wheel.1.tire",
+          "lowestY": 1.907348634588857e-8
+        },
+        {
+          "id": "aircraft.gear.nose.leg.truck.wheel.2.tire",
+          "lowestY": 1.907348634588857e-8
+        }
+      ]
+    },
+    {
+      "name": "Sampled moving gear/flap actuators remain attached at both endpoints",
+      "passed": true,
+      "measured": 8.881784197001252e-16
+    },
+    {
+      "name": "Nested exploded paths and reversals remain finite and continuous at 60 Hz",
+      "passed": true,
+      "measured": {
+        "maximumLocalStepMetres": 0.3353956030759189
+      }
+    },
+    {
+      "name": "Every assembly and physical part returns to its exact local mount",
+      "passed": true,
+      "measured": 11836
+    }
+  ],
+  "limitations": "Reference envelope and educational geometry. This sampled mesh/transform audit is not an exhaustive triangle-collision proof or a certified maintenance sequence."
+}

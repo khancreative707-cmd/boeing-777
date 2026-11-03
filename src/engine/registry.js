@@ -141,7 +141,7 @@ export class ComponentRegistry {
   effectiveVisible(id, includeAncestorFrames = false) {
     const p = this.get(id);
     if (!p?.visible) return false;
-    if (this.visibilityFilter && !this.visibilityFilter(p)) return false;
+    if (this.visibilityFilter && !this.visibilityFilter(p, includeAncestorFrames)) return false;
     if (this.ancestors(id).some((a) => !a.visible)) return false;
     return (
       !this.isolation ||
@@ -157,13 +157,25 @@ export class ComponentRegistry {
         for (const visual of p.visuals)
           if (visual.index === undefined) visual.mesh.visible = p.renderVisible;
       }
-    for (const { mesh, ids } of this.batches) {
+    for (const { mesh, ids, worldFrames } of this.batches) {
       let changed = false;
+      let inverse;
+      if (worldFrames) {
+        mesh.parent.updateWorldMatrix(true, false);
+        inverse = mesh.parent.matrixWorld.clone().invert();
+      }
       for (let i = 0; i < ids.length; i++) {
         const p = this.get(ids[i]);
-        if (this.visibilityDirty || p.transformDirty) {
+        if (
+          this.visibilityDirty ||
+          p.transformDirty ||
+          (worldFrames && p.ancestorRefs.some((a) => a.transformDirty))
+        ) {
           p.object.updateMatrix();
-          scratch.matrix.copy(p.object.matrix);
+          if (worldFrames) {
+            p.object.updateWorldMatrix(true, false);
+            scratch.matrix.copy(inverse).multiply(p.object.matrixWorld);
+          } else scratch.matrix.copy(p.object.matrix);
           if (!p.renderVisible) scratch.matrix.scale(hiddenScale);
           mesh.setMatrixAt(i, scratch.matrix);
           changed = true;
@@ -188,9 +200,12 @@ export class ComponentRegistry {
             hover = this.hover && this.isWithin(p.id, this.hover);
           if (selected || hover) {
             if (!v.highlight) v.highlight = v.baseMaterial.clone();
-            v.highlight.color.copy(v.baseMaterial.color).lerp(copper, selected ? 0.48 : 0.2);
-            v.highlight.emissive.set(selected ? '#422817' : '#17140f');
-            v.highlight.emissiveIntensity = 0.16;
+            if (v.highlight.color && v.baseMaterial.color)
+              v.highlight.color.copy(v.baseMaterial.color).lerp(copper, selected ? 0.48 : 0.2);
+            if (v.highlight.emissive) {
+              v.highlight.emissive.set(selected ? '#422817' : '#17140f');
+              v.highlight.emissiveIntensity = 0.16;
+            }
             v.mesh.material = v.highlight;
           } else v.mesh.material = v.baseMaterial;
         }

@@ -7,18 +7,21 @@ import {
   AlertTriangle,
   ChevronRight,
   Wind,
+  Orbit,
 } from 'lucide-react';
 import { EngineViewer } from '../scene/viewer.js';
 import { Instruments } from './Instruments.jsx';
+import { AircraftInstruments } from '../aircraft/Instruments.jsx';
 export function Viewport({ lab, state }) {
+  const aircraft = lab.kind === 'aircraft';
   const mount = useRef(null);
-  const [error, setError] = useState(''),
-    [view, setView] = useState('Orbit');
+  const [error, setError] = useState('');
   useEffect(() => {
     let viewer;
     try {
       viewer = new EngineViewer(mount.current, lab);
       window.__engineLab = lab;
+      if (aircraft) window.__aircraftLab = lab;
     } catch (e) {
       console.error(e);
       setError(e.message);
@@ -26,31 +29,71 @@ export function Viewport({ lab, state }) {
     return () => {
       viewer?.dispose();
       delete window.__engineLab;
+      if (aircraft) delete window.__aircraftLab;
     };
   }, [lab]);
   return (
-    <main className="viewport-panel">
+    <main className={`viewport-panel ${aircraft ? 'aircraft-viewport' : ''}`}>
       <div className="viewport-heading">
         <div>
-          <h1>GE90–115B</h1>
+          <h1>
+            {aircraft
+              ? state.engineFocus
+                ? `${state.engineFocus === 'left' ? 'Left' : 'Right'} GE90–115B`
+                : 'Boeing 777–300ER'
+              : 'GE90–115B'}
+          </h1>
           <p>
-            High-bypass turbofan <span>·</span> Two-spool architecture
+            {aircraft && !state.engineFocus
+              ? 'Aircraft anatomy · Two GE90–115B engines'
+              : 'High-bypass turbofan · Two-spool architecture'}
           </p>
         </div>
         <nav className="camera-views" aria-label="Camera views">
-          {['Orbit', 'Front', 'Side', 'Rear'].map((v) => (
+          {(aircraft && !state.engineFocus
+            ? ['Exterior', 'Front', 'Side', 'Top', 'Underside']
+            : ['Orbit', 'Front', 'Side', 'Rear']
+          ).map((v) => (
             <button
               key={v}
               onClick={() => {
-                setView(v);
                 lab.viewer?.setView(v);
               }}
-              aria-pressed={view === v}
-              className={view === v ? 'active' : ''}
+              aria-pressed={state.cameraView === v}
+              className={state.cameraView === v ? 'active' : ''}
             >
               {v}
             </button>
           ))}
+          {aircraft && !state.engineFocus ? (
+            <select
+              aria-label="Interior camera"
+              defaultValue=""
+              onChange={(e) => {
+                if (e.target.value) lab.openInterior(e.target.value);
+                e.target.value = '';
+              }}
+            >
+              <option value="">Interior…</option>
+              <option value="Cabin">Cabin</option>
+              <option value="Cockpit">Cockpit</option>
+              <option value="Cargo">Cargo bay</option>
+            </select>
+          ) : null}
+          <button
+            aria-label="Auto orbit"
+            title={
+              state.reduced
+                ? 'Auto orbit is disabled for reduced motion'
+                : 'Slow orbit · drag to take control'
+            }
+            disabled={state.reduced}
+            aria-pressed={state.autoOrbit}
+            className={state.autoOrbit ? 'active' : ''}
+            onClick={() => lab.setAutoOrbit(!state.autoOrbit)}
+          >
+            <Orbit size={14} />
+          </button>
         </nav>
       </div>
       <div
@@ -84,9 +127,13 @@ export function Viewport({ lab, state }) {
                   ? 'INTERNAL CUTAWAY'
                   : 'COMPLETE ASSEMBLY'}
           </span>
-          <span>GE90 / 115B</span>
+          <span>{aircraft ? '777 / 300ER' : 'GE90 / 115B'}</span>
         </div>
-        <Instruments lab={lab} interlocked={lab.simulation.interlocked} />
+        {aircraft ? (
+          <AircraftInstruments lab={lab} state={state} />
+        ) : (
+          <Instruments lab={lab} interlocked={lab.simulation.interlocked} />
+        )}
       </div>
       {state.airflow ? (
         <div className="airflow-legend">
@@ -108,9 +155,12 @@ export function Viewport({ lab, state }) {
         </div>
       ) : null}
       {state.isolated ? (
-        <button className="isolation-back button" onClick={() => lab.isolate(state.isolated)}>
+        <button
+          className="isolation-back button"
+          onClick={() => (aircraft ? lab.showAircraft() : lab.isolate(state.isolated))}
+        >
           <Scan size={14} />
-          Show complete engine
+          {aircraft ? 'Show complete aircraft' : 'Show complete engine'}
         </button>
       ) : null}
       {state.message ? (

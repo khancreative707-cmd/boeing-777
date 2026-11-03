@@ -2,12 +2,13 @@ import { EngineSimulation } from './simulation.js';
 import { AssemblyController } from './assembly-controller.js';
 import { buildEngine } from '../scene/build-engine.js';
 import { createMaterials } from '../scene/materials.js';
+import { ENGINE_TOUR } from './tour.js';
 
 export class EngineLab {
-  constructor() {
-    this.materialSet = createMaterials();
-    Object.assign(this, buildEngine(this.materialSet.materials));
-    this.simulation = new EngineSimulation();
+  constructor(options = {}) {
+    this.materialSet = options.materialSet || createMaterials();
+    Object.assign(this, (options.build || buildEngine)(this.materialSet.materials));
+    this.simulation = options.simulation || new EngineSimulation();
     this.assembly = new AssemblyController(this.registry, this.simulation);
     this.listeners = new Set();
     this.telemetryListeners = new Set();
@@ -27,6 +28,10 @@ export class EngineLab {
       version: 0,
       ready: false,
       reduced: false,
+      explosion: 0,
+      tourStep: null,
+      autoOrbit: false,
+      cameraView: 'Orbit',
     };
     this.registry.setSelection(this.state.selected);
     this.parts = this.registry.snapshot();
@@ -47,15 +52,22 @@ export class EngineLab {
   }
   select(id) {
     if (!this.registry.get(id)) return;
+    if (this.state.tourStep !== null) this.endTour();
     this.registry.setSelection(id);
     this.emit({ selected: id, message: '' });
   }
   toggleVisibility(id) {
+    if (this.state.tourStep !== null) this.endTour();
     const p = this.registry.get(id);
     this.registry.setVisible(id, !p.visible);
     this.refresh();
   }
   isolate(id = this.state.selected) {
+    if (this.state.tourStep !== null) {
+      const showingTourSystem = this.registry.isolation === id;
+      this.endTour();
+      if (showingTourSystem) return;
+    }
     this.registry.isolate(id);
     this.emit({
       isolated: this.registry.isolation,
@@ -67,6 +79,7 @@ export class EngineLab {
     else this.viewer?.setView('Orbit');
   }
   detach(id = this.state.selected) {
+    if (this.state.tourStep !== null) this.endTour();
     if (this.state.exploded) {
       this.emit({ message: 'Reassemble the exploded view before removing an individual part.' });
       return false;
@@ -97,6 +110,10 @@ export class EngineLab {
     return result.ok;
   }
   explode() {
+    return this.setExplosion(1);
+  }
+  setExplosion(amount) {
+    if (!Number.isFinite(amount)) return false;
     if (
       [...this.registry.entries.values()].some((p) => p.detached || p.target > 0 || p.amount > 1e-5)
     ) {
@@ -105,23 +122,30 @@ export class EngineLab {
       });
       return false;
     }
+    if (this.state.tourStep !== null) this.endTour();
+    const entering = !this.state.exploded;
     this.registry.isolation = null;
     this.registry.visibilityDirty = true;
-    this.assembly.explode(true);
+    this.assembly.setExplosion(amount);
     this.refresh({
-      exploded: true,
+      exploded: this.assembly.explodeTarget > 0 || this.assembly.explodeAmount > 0,
+      explosion: this.assembly.explodeTarget,
       isolated: null,
       message: 'Exploded assembly · operation interlocked. Select a part to inspect it.',
       phase: this.simulation.phase,
     });
-    this.viewer?.setView('Exploded');
+    if (this.assembly.explodeTarget === 0) this.viewer?.setView('Orbit');
+    else if (entering) this.viewer?.setView('Exploded');
+    return true;
   }
   reassemble() {
+    if (this.state.tourStep !== null) this.endTour();
     this.registry.isolation = null;
     this.registry.visibilityDirty = true;
     this.assembly.reassemble();
     this.refresh({
       exploded: false,
+      explosion: 0,
       isolated: null,
       message: this.assembly.hasMissing()
         ? 'Reassembling · inner components return before the casings close.'
@@ -157,10 +181,65 @@ export class EngineLab {
   toggleAirflow() {
     this.emit({ airflow: !this.state.airflow });
   }
+  setAutoOrbit(on) {
+    this.emit({ autoOrbit: !!on && !this.state.reduced });
+  }
+  setTourStep(index) {
+    const chapter = ENGINE_TOUR[index];
+    if (!chapter) return false;
+    if (this.assembly.hasMissing()) {
+      this.emit({ message: 'Reassemble the engine before starting the guided tour.' });
+      return false;
+    }
+    if (this.state.tourStep === null) {
+      this.tourCutaway = this.state.cutaway;
+      this.tourVisibility = new Map(
+        [...this.registry.entries.values()].map((p) => [p.id, p.visible]),
+      );
+    }
+    for (const p of [
+      ...this.registry.ancestors(chapter.id),
+      ...this.registry.descendants(chapter.id),
+    ])
+      this.registry.setVisible(p.id, true);
+    this.registry.isolation = chapter.id;
+    this.registry.visibilityDirty = true;
+    this.registry.setSelection(chapter.id);
+    this.refresh({
+      tourStep: index,
+      cutaway: true,
+      selected: chapter.id,
+      isolated: chapter.id,
+      autoOrbit: false,
+      message: '',
+    });
+    this.viewer?.focus(chapter.id);
+    return true;
+  }
+  endTour() {
+    if (this.state.tourStep === null) return;
+    for (const [id, visible] of this.tourVisibility || []) this.registry.setVisible(id, visible);
+    this.tourVisibility = null;
+    this.registry.isolation = null;
+    this.registry.visibilityDirty = true;
+    this.refresh({
+      tourStep: null,
+      cutaway: this.tourCutaway,
+      isolated: null,
+      message: 'Explore freely · select any component.',
+    });
+    this.viewer?.setView('Orbit');
+  }
   step(dt) {
     const moving = this.assembly.step(dt, this.state.reduced);
     this.simulation.step(dt, this.state.reduced);
     if (this.lastMoving && !moving) {
+      if (
+        this.assembly.explodeAmount === 0 &&
+        this.assembly.explodeTarget === 0 &&
+        this.state.exploded
+      )
+        this.emit({ exploded: false });
       const selected = this.registry.get(this.state.selected);
       const message = this.state.exploded
         ? 'Exploded assembly · operation interlocked.'

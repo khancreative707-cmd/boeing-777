@@ -333,7 +333,7 @@
     {
       "name": "Full explode and four mid-flight reversals stay continuous",
       "passed": true,
-      "measured": 0.25099544968004206
+      "measured": 0.3086553656849076
     },
     {
       "name": "Every component returns to its exact original local mount",

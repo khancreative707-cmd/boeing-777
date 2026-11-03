@@ -2,6 +2,12 @@
 
 The flow under test is: open the production exhibit → select geometry or a hierarchy item → detach after satisfying prerequisites → inspect and reattach → explode/reassemble → operate the two-spool simulation with airflow → use the same controls on a narrow screen.
 
+## Interaction polish validation — 2026-11-02
+
+33 model tests and 69 geometry checks passed. The production browser suite passed 18 workflows with zero application console errors, including new checks for chapter navigation, fractional assembly spread, exact closure, automatic orbit, direct-input takeover and reduced motion. The latest tour cutaway, aspect-aware component framing and Show complete engine refinements were subsequently checked with the four exploration model tests and a focused Chromium run at 1600×1000 and 390×844. That run confirmed visible internal rotors, hidden cutaway casing sectors, tour exit, mobile drawer operation and header bounds, and refreshed the tour/mobile captures. Results are recorded separately in `verification.json` under `polishVisualChecks`.
+
+The Browser plugin was not available; Chromium/Playwright was used. Cloud SwiftShader rendering verifies behavior and layout, not hardware 60 FPS. Screenshots were visually inspected for layout, depth and unwanted clipping. New evidence: `screenshots/guided-tour.png`, `screenshots/assembly-spread.png` and `screenshots/mobile-tour.png`. The earlier concept layout is retained; new controls live in the existing hierarchy, inspector and camera toolbar.
+
 ## Evidence and commands
 
 Reconnected validation on 2026-10-23: production build and formatting passed; 29 model tests passed; 69 geometry checks passed. The 15-flow Chromium suite passed with zero application console errors after the GPU queue correction. Subsequent visual review corrected isolation and liner-marker ownership; the final build was validated with the expanded model tests and supplementary browser captures of the main views, mobile framing, isolation and intermediate explosion poses. The full 15-flow suite was not repeated after those localized corrections. `verification.json` preserves the full-suite timestamp and the later supplementary completion timestamp separately.

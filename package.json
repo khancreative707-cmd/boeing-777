@@ -8,10 +8,14 @@
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
     "test": "node --test --test-isolation=none tests/*.test.js",
-    "test:e2e": "npm run build && node tests/browser.mjs",
+    "test:e2e": "npm run build && node tests/browser.mjs && node tests/aircraft-browser.mjs",
     "audit": "node scripts/audit-geometry.mjs",
     "docs:hierarchy": "node scripts/export-hierarchy.mjs",
-    "format:check": "prettier --check src tests scripts vite.config.js package.json"
+    "format:check": "prettier --check src tests scripts vite.config.js package.json",
+    "test:engine": "npm run build && node tests/browser.mjs",
+    "test:aircraft": "npm run build && node tests/aircraft-browser.mjs",
+    "audit:aircraft": "node scripts/audit-aircraft.mjs",
+    "capture:aircraft-motion": "npm run build && node scripts/capture-aircraft-motion.mjs"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "5.2.6",

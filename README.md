@@ -1,6 +1,16 @@
-# GE90–115B · Anatomy Engine Laboratory
+# Boeing 777–300ER · Anatomy Aircraft Laboratory
+
+The default exhibit is now a complete, interactive Boeing 777–300ER with **11,836 registered components**, two detailed GE90–115B engines, sectional cabin/cargo views, cockpit equipment, structures, representative systems and operating maintenance mechanisms. The original standalone GE90 exhibit remains available at **`/?view=engine`**.
+
+See the [aircraft guide, hierarchy and approximation notes](docs/aircraft/README.md), [actual mesh audit](docs/aircraft/geometry-audit.json), and [browser screenshots](docs/aircraft/screenshots/). Both exhibits run from the same application and deployment.
+
+Aircraft controls: select or double-click geometry, search the hierarchy, switch layers, open an interior camera, or choose **Engine lab** for the mounted engines. The bottom controls operate independent engines, flaps, gear, doors and lighting; **Mechanisms** exposes cargo doors, bins, spoilers and control surfaces. Park mechanisms before disassembly. Gear retraction and assembly spread engage maintenance supports first. Every modeled physical part retains a separate selectable/removable identity and saved mount.
+
+## Original GE90 exhibit
 
 A real-time, freely orbitable engineering exhibit for the GE90–115B turbofan used on the Boeing 777–300ER. Built with React, Three.js and the repository-local Anatomy skill. The engine is procedural 3D geometry, not a photograph or a pre-rendered animation.
+
+See [interaction improvements and next priorities](docs/IMPROVEMENTS.md) for the guided tour, adjustable assembly spread, camera refinements and proposed next features.
 
 ## Run
 
@@ -16,15 +26,20 @@ The development server listens on port 5173. No API keys, external services, CDN
 ```sh
 npm test                 # Mechanical and assembly invariants
 npm run audit            # Drawn-mesh radial clearance / transform audit
+npm run audit:aircraft   # Aircraft mesh, apertures, actuator paths, exact restoration and inventory
 npm run build            # Production assets in dist/
 npm run preview          # Serve the production build
 npm run test:e2e          # Build, serve, test real Chromium interactions and save screenshots
 npm run docs:hierarchy   # Export every ID, parent, material, metadata and original local mount
 ```
 
-`test:e2e` uses `/usr/bin/chromium` by default. Set `CHROME_PATH` to another Chromium executable; set `APP_URL` to test an already-running server instead of starting a production preview on port 4173. Local browser sockets require an execution environment that permits Chromium. npm's default cache can be overridden with `npm ci --cache /tmp/ge90-npm-cache` if the home directory is not writable.
+`test:e2e` tests both exhibits sequentially and uses `/usr/bin/chromium` by default. Set `CHROME_PATH` to another Chromium executable. `test:engine` accepts `APP_URL` (include `/?view=engine`) and otherwise starts port 4173; `test:aircraft` accepts `AIRCRAFT_URL` and otherwise starts port 4175. Local browser sockets require an execution environment that permits Chromium. npm's default cache can be overridden with `npm ci --cache /tmp/ge90-npm-cache` if the home directory is not writable.
 
 ## Explore the engine
+
+- **Guided tour:** use the header control for a seven-stop walkthrough from fan to concentric shafts. Each chapter selects and frames real geometry; Previous, Next and chapter markers let you set the pace. Internal systems use cutaway visibility. Ending the tour restores your earlier visibility settings.
+- **Assembly spread:** the hierarchy sidebar's 0–100% slider separates the engine gradually. Reverse or pause at any spread; startup stays interlocked until the components return fully to their mounts. Assembly motion now uses a damped spring with continuous velocity when its target changes.
+- **Auto orbit:** the camera toolbar's orbit icon slowly rotates the view. Drag, pan, zoom or choose a preset to take over. Reduced-motion preferences disable it. Camera presets follow curved paths around their target with gentle acceleration and deceleration.
 
 - **Orbit:** left-drag or one-finger drag. **Pan:** right-drag or two-finger drag. **Zoom:** wheel or pinch.
 - **Select:** click geometry or a hierarchy row. Every blade, vane, casing, shaft, bearing, fitting and fastener has an individual identity, including GPU instances.
@@ -74,6 +89,8 @@ N1 and N2 are normalized educational spool percentages, not certified RPM measur
 ```text
 src/engine/       Public architecture, registry, dependency/disassembly controller,
                   two-spool state model and shared mechanical transforms
+src/aircraft/     Aircraft geometry, assembly builders, dual-engine adapter,
+                  sequenced mechanisms, dynamic linkages, effects and exhibit UI
 src/scene/        Procedural geometry, PBR materials, nested assembly generation,
                   camera/selection/render loop, world-space airflow and combustion
 src/components/   Assembly tree, live instruments, actual-geometry inspector,

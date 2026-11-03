@@ -2,7 +2,7 @@ import { chromium } from '@playwright/test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { mkdir, writeFile } from 'node:fs/promises';
-const url = process.env.APP_URL || 'http://127.0.0.1:4173';
+const url = process.env.APP_URL || 'http://127.0.0.1:4173/?view=engine';
 let server, browser;
 const errors = [],
   warnings = [],
@@ -63,6 +63,83 @@ try {
     );
   });
   await page.screenshot({ path: output + 'cutaway.png' });
+  await check('guided tour selects actual systems and supports chapter navigation', async () => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.getByRole('button', { name: 'Guided tour', exact: true }).click();
+    await page.waitForFunction(() => window.__engineLab.state.tourStep === 0);
+    assert.equal(await page.evaluate(() => window.__engineLab.registry.isolation), 'fan');
+    await page.getByRole('button', { name: 'Next system', exact: true }).click();
+    assert.equal(await page.evaluate(() => window.__engineLab.state.selected), 'booster');
+    await page.getByRole('button', { name: /Tour chapter 3:/ }).click();
+    await page.waitForFunction(() => window.__engineLab.viewer.cameraTransition === null);
+    assert.equal(await page.evaluate(() => window.__engineLab.state.selected), 'hpc');
+    await page.screenshot({ path: output + 'guided-tour.png' });
+    await page.getByRole('button', { name: 'End guided tour', exact: true }).click();
+    assert.equal(await page.evaluate(() => window.__engineLab.registry.isolation), null);
+  });
+  await check(
+    'assembly spread scrubs real transforms and keeps operation interlocked until closed',
+    async () => {
+      const spread = page.getByRole('slider', { name: 'Assembly spread', exact: true });
+      await spread.fill('58');
+      await page.waitForFunction(() => window.__engineLab.assembly.explodeAmount === 0.58);
+      assert.equal(await page.evaluate(() => window.__engineLab.simulation.interlocked), true);
+      assert.equal(
+        await page.evaluate(() =>
+          window.__engineLab.registry
+            .get('fan')
+            .object.position.equals(window.__engineLab.registry.get('fan').mount.position),
+        ),
+        false,
+      );
+      await page.screenshot({ path: output + 'assembly-spread.png' });
+      await spread.fill('17');
+      await page.waitForFunction(() => window.__engineLab.assembly.explodeAmount === 0.17);
+      await spread.fill('0');
+      await page.waitForFunction(
+        () => !window.__engineLab.state.exploded && !window.__engineLab.simulation.interlocked,
+      );
+      assert.equal(
+        await page.evaluate(() =>
+          [...window.__engineLab.registry.entries.values()].every((p) =>
+            p.object.position.equals(p.mount.position),
+          ),
+        ),
+        true,
+      );
+    },
+  );
+  await check(
+    'auto orbit moves the camera, yields to input, and respects reduced motion',
+    async () => {
+      await page.emulateMedia({ reducedMotion: 'no-preference' });
+      await page.waitForFunction(
+        () => !window.__engineLab.state.reduced && !window.__engineLab.viewer.cameraTransition,
+      );
+      const before = await page.evaluate(() => window.__engineLab.viewer.camera.position.toArray());
+      await page.getByRole('button', { name: 'Auto orbit', exact: true }).click();
+      await page.waitForFunction(
+        (before) =>
+          window.__engineLab.viewer.camera.position
+            .toArray()
+            .some((v, i) => Math.abs(v - before[i]) > 0.01),
+        before,
+      );
+      const canvas = await page.locator('canvas').boundingBox();
+      await page.mouse.move(canvas.x + canvas.width * 0.45, canvas.y + canvas.height * 0.5);
+      await page.mouse.down();
+      await page.mouse.up();
+      assert.equal(await page.evaluate(() => window.__engineLab.state.autoOrbit), false);
+      await page.getByRole('button', { name: 'Auto orbit', exact: true }).click();
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await page.waitForFunction(() => !window.__engineLab.state.autoOrbit);
+      assert.equal(
+        await page.getByRole('button', { name: 'Auto orbit', exact: true }).isDisabled(),
+        true,
+      );
+      await page.getByRole('button', { name: 'Reset view', exact: true }).click();
+    },
+  );
   await check(
     'assembled mode restores every exterior shell and cutaway returns to the same assembly',
     async () => {
@@ -339,6 +416,10 @@ try {
     async () => {
       await page.setViewportSize({ width: 390, height: 844 });
       await page.waitForTimeout(450);
+      await page.getByRole('button', { name: 'Guided tour', exact: true }).click();
+      assert.ok(await page.getByRole('region', { name: 'Guided engine tour' }).isVisible());
+      await page.getByRole('button', { name: 'End guided tour', exact: true }).click();
+      await page.getByRole('button', { name: 'Close inspector', exact: true }).click();
       assert.equal(
         await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
         true,

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { smooth } from '../../.agents/skills/anatomy/kit/gl.mjs';
+import { smooth, settle } from '../../.agents/skills/anatomy/kit/gl.mjs';
 
 /** Reversible, absolute-from-mount transforms; ancestors carry all descendants. */
 export class AssemblyController {
@@ -9,6 +9,7 @@ export class AssemblyController {
     this.exploded = false;
     this.explodeAmount = 0;
     this.explodeTarget = 0;
+    this.explodeMotion = { x: 0, v: 0 };
     this.clock = 0;
     this.returningAll = false;
     this.dependents = new Map();
@@ -81,10 +82,16 @@ export class AssemblyController {
     return { ok: true };
   }
   explode(on) {
-    this.exploded = on;
-    this.explodeTarget = on ? 1 : 0;
-    this.simulation.setInterlock(on || this.hasMissing());
+    this.setExplosion(on ? 1 : 0);
+  }
+  setExplosion(amount) {
+    if (!Number.isFinite(amount)) return false;
+    this.explodeTarget = Math.max(0, Math.min(1, amount));
+    this.exploded = this.explodeTarget > 0;
+    this.returningAll = false;
+    this.simulation.setInterlock(this.hasMissing());
     this.registry.dirty = true;
+    return true;
   }
   reassemble() {
     this.exploded = false;
@@ -154,7 +161,9 @@ export class AssemblyController {
           ? target
           : value + (target - value) * (1 - Math.exp(-dt / tau));
     const old = this.explodeAmount;
-    this.explodeAmount = follow(old, this.explodeTarget, 0.5);
+    if (this.explodeMotion.x !== old) this.explodeMotion = { x: old, v: 0 };
+    settle(this.explodeMotion, this.explodeTarget, dt, 0.2, reduced);
+    this.explodeAmount = this.explodeMotion.x;
     if (old !== this.explodeAmount) moving = true;
     for (const p of this.registry.entries.values()) {
       const before = p.amount;
@@ -166,17 +175,23 @@ export class AssemblyController {
         p.detached = false;
         p.inspect.identity();
       }
-      const share = this.explodeAmount;
+      const share =
+        this.explodeScope && !this.registry.isWithin(p.id, this.explodeScope)
+          ? 0
+          : this.explodeAmount;
+      const localId = p.engineSide ? p.id.slice(`aircraft.engines.${p.engineSide}.`.length) : p.id;
       const e =
-        p.id === 'exterior'
+        localId === 'exterior'
           ? smooth(0.45, 1, share)
           : p.kind === 'casing'
             ? smooth(0, 0.3, share)
-            : p.id.startsWith('shafts.bearing')
+            : localId.startsWith('shafts.bearing')
               ? smooth(0.82, 1, share)
               : smooth(0.16, 1, share);
       const d = smooth(0, 1, p.amount);
-      p.object.position.copy(p.mount.position).addScaledVector(p.explode, e);
+      p.object.position
+        .copy(p.detached ? p.mount.position : p.operatingPosition || p.mount.position)
+        .addScaledVector(p.explode, e);
       // Start extraction along the axis before spreading radially out of the mounting row.
       if (p.extraction === 'axial-first') {
         p.object.position.x += p.move.x * smooth(0, 0.55, d);
@@ -184,7 +199,9 @@ export class AssemblyController {
         p.object.position.z += p.move.z * smooth(0.55, 1, d);
       } else if (!p.splitCasing) p.object.position.addScaledVector(p.move, d);
       p.object.quaternion.copy(
-        p.detached ? p.detachedQuaternion || p.mount.quaternion : p.mount.quaternion,
+        p.detached
+          ? p.detachedQuaternion || p.mount.quaternion
+          : p.operatingQuaternion || p.mount.quaternion,
       );
       if (p.detached && p.amount > 0.8) {
         const q = new THREE.Quaternion().slerp(p.inspect, smooth(0.8, 1, p.amount));
@@ -196,7 +213,7 @@ export class AssemblyController {
           p.object.position.add(before.sub(after));
         }
       }
-      p.object.scale.copy(p.mount.scale);
+      p.object.scale.copy(p.detached ? p.mount.scale : p.operatingScale || p.mount.scale);
       // A removed child is anchored in world space even if its original parent moves.
       // On return, blend that anchor back into the parent's current frame before seating.
       if (p.detached && p.detachParentWorld) {
@@ -204,13 +221,14 @@ export class AssemblyController {
         // Counter-transform against the same frozen shaft pose the renderer uses.
         for (const ancestor of p.ancestorRefs) {
           const spool = this.spoolById.get(ancestor.id);
+          const source = this.simulation.forComponent?.(ancestor.id) || this.simulation;
           if (spool && !ancestor.detached)
             ancestor.object.quaternion
               .copy(ancestor.mount.quaternion)
               .multiply(
                 new THREE.Quaternion().setFromAxisAngle(
                   new THREE.Vector3(1, 0, 0),
-                  spool === 'LP' ? this.simulation.lpAngle : this.simulation.hpAngle,
+                  spool === 'LP' ? source.lpAngle : source.hpAngle,
                 ),
               );
         }
