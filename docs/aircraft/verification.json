@@ -1,0 +1,86 @@
+{
+  "date": "2026-11-03T09:03:40.320Z",
+  "url": "http://127.0.0.1:4175",
+  "browser": "Chromium / Playwright; Browser plugin not available",
+  "viewports": [
+    "1568×1003",
+    "390×844"
+  ],
+  "results": [
+    {
+      "name": "whole-aircraft page renders real WebGL geometry without an error overlay",
+      "status": "passed"
+    },
+    {
+      "name": "real canvas picking and double-click isolation identify physical aircraft parts",
+      "status": "passed"
+    },
+    {
+      "name": "sectional view exposes cabin and cargo while opening near-side frame segments",
+      "status": "passed"
+    },
+    {
+      "name": "flaps and slats respond to one control and return to their exact neutral mounts",
+      "status": "passed"
+    },
+    {
+      "name": "gear cycling engages supports and protects their release until the gear is down",
+      "status": "passed"
+    },
+    {
+      "name": "a complete six-wheel gear can detach, rotate and return to its exact mount",
+      "status": "passed"
+    },
+    {
+      "name": "mounted-engine inspection preserves independent left and right spool states and airflow",
+      "status": "passed"
+    },
+    {
+      "name": "removing a mounted-engine spinner freezes both engines and blocks restart",
+      "status": "passed"
+    },
+    {
+      "name": "cockpit close-up exposes actual equipment and live model-driven screens",
+      "status": "passed"
+    },
+    {
+      "name": "individual seat removal respects the actual skin cover, inspection and return dependencies",
+      "status": "passed"
+    },
+    {
+      "name": "whole-aircraft spread separates the complete hierarchy and reassembles exactly",
+      "status": "passed"
+    },
+    {
+      "name": "aircraft tour, layer controls, reference dialog and keyboard controls remain usable",
+      "status": "passed"
+    },
+    {
+      "name": "phone view fits the page and both component drawers and the aircraft tour work",
+      "status": "passed"
+    },
+    {
+      "name": "No application console errors",
+      "status": "passed"
+    }
+  ],
+  "errors": [],
+  "warnings": [
+    "[.WebGL-0x4c4001b9a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x4c4001b9a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+  ],
+  "diagnostics": {
+    "parts": 11836,
+    "pixelRatio": 0.85,
+    "softwareRenderer": true,
+    "renderCpuMs": 8.100000023841858,
+    "frameRateLimit": 10,
+    "gpuBackpressure": true,
+    "targetFps": 60,
+    "drawCalls": 679,
+    "triangles": 1479330,
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "frames": 299
+  },
+  "note": "Cloud SwiftShader rendering does not establish hardware 60 FPS. Public Boeing reference retrieval was blocked; internal geometry and operation are educational."
+}

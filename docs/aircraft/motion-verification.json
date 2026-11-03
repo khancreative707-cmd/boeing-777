@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-03T09:04:13.017Z",
+  "method": "Actual production WebGL scene with deterministic 60 Hz normal-model stepping. The demand loop is suspended only for repeatable frame capture; UI workflows use the separate browser suite.",
+  "frames": [
+    {
+      "name": "gear-motion-25",
+      "steps": 773,
+      "channel": "gear",
+      "value": 0.2532499745265057,
+      "gearDoors": 0.9998125514440114,
+      "supports": 1,
+      "sillFixed": true
+    },
+    {
+      "name": "gear-motion-65",
+      "steps": 75,
+      "channel": "gear",
+      "value": 0.6502674882627039,
+      "gearDoors": 1,
+      "supports": 1,
+      "sillFixed": true
+    },
+    {
+      "name": "door-motion-35",
+      "steps": 39,
+      "channel": "doors",
+      "value": 0.35784758065728284,
+      "gearDoors": 0,
+      "supports": 1,
+      "sillFixed": true
+    },
+    {
+      "name": "door-motion-80",
+      "steps": 55,
+      "channel": "doors",
+      "value": 0.8033396655005054,
+      "gearDoors": 0,
+      "supports": 1,
+      "sillFixed": true
+    }
+  ],
+  "errors": []
+}
