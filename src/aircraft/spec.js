@@ -62,6 +62,6 @@ export const AIRCRAFT_VIEWS = {
   Cabin: { position: [-18, 15, 25], target: [-9, 6, 0] },
   Cockpit: { position: [-26.2, 10.8, 6.8], target: [-31.8, 6.8, 0] },
   Cargo: { position: [-3, 5, 23], target: [-3, 4.4, 0] },
-  Exploded: { position: [-111, 62, 125], target: [0, 8, 0] },
+  Exploded: { position: [-98, 50, 110], target: [0, 8, 0] },
   Orbit: { position: [-74, 32, 72], target: [0, 5, 0] },
 };

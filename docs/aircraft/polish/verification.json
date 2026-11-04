@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-04T05:04:11.861Z",
+  "browser": "Playwright / Chromium; Browser plugin unavailable",
+  "checks": [
+    "Focused seat fits within the central 75% of the viewport; hidden batches no longer draw",
+    "Mobile camera toolbar clears the heading and the page has no horizontal overflow",
+    "Sectional control renders correctly without application console errors"
+  ],
+  "errors": [],
+  "initial": {
+    "parts": 11836,
+    "pixelRatio": 0.85,
+    "softwareRenderer": true,
+    "renderCpuMs": 13.899999998509884,
+    "frameRateLimit": 10,
+    "gpuBackpressure": true,
+    "targetFps": 60,
+    "drawCalls": 374,
+    "triangles": 622794,
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "frames": 3
+  },
+  "isolated": {
+    "parts": 11836,
+    "pixelRatio": 0.85,
+    "softwareRenderer": true,
+    "renderCpuMs": 6.399999998509884,
+    "frameRateLimit": 10,
+    "gpuBackpressure": true,
+    "targetFps": 60,
+    "drawCalls": 7,
+    "triangles": 157546,
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "frames": 5
+  },
+  "bounds": {
+    "titleBottom": 162.796875,
+    "toolbarTop": 187.796875,
+    "overflow": false
+  }
+}

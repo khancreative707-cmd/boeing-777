@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { cached } from '../scene/geometry.js';
 
 const bodyStations = [
@@ -138,13 +139,261 @@ export function doorOpeningAt(x, y, z) {
     return true;
   return z > 1.5 && y > 4.2 && y < 5.8 && [-17.2, 17.7].some((d) => Math.abs(x - d) < 1.415);
 }
+
+// Six educational windshield panes wrap from a narrow center post onto the sides.
+export const WINDSHIELD_PANES = [
+  [
+    [-34.9, 0.055],
+    [-33.85, 0.9],
+    [-33.3, 0.68],
+    [-33.75, 0.045],
+  ],
+  [
+    [-33.7, 0.94],
+    [-32.65, 1.15],
+    [-32.5, 0.88],
+    [-33.15, 0.72],
+  ],
+  [
+    [-32.5, 1.16],
+    [-31.35, 1.19],
+    [-31.35, 0.92],
+    [-32.35, 0.9],
+  ],
+];
+const windshieldPlanes = new Map();
+function windshieldPlane(index, side) {
+  const key = index + ':' + side;
+  if (windshieldPlanes.has(key)) return windshieldPlanes.get(key);
+  const corners = WINDSHIELD_PANES[index].map(([x, a]) => {
+    const p = fuselageProfile(x);
+    return new THREE.Vector3(x, p.y + p.r * Math.cos(a), side * p.r * Math.sin(a));
+  });
+  const center = corners.reduce((sum, p) => sum.add(p), new THREE.Vector3()).multiplyScalar(0.25);
+  const normal = corners[2]
+    .clone()
+    .sub(corners[0])
+    .cross(corners[3].clone().sub(corners[1]))
+    .normalize();
+  if (normal.z * side < 0) normal.negate();
+  for (const p of corners) p.addScaledVector(normal, -p.clone().sub(center).dot(normal));
+  const at = (u, v) =>
+    corners[0]
+      .clone()
+      .multiplyScalar((1 - u) * (1 - v))
+      .addScaledVector(corners[1], u * (1 - v))
+      .addScaledVector(corners[2], u * v)
+      .addScaledVector(corners[3], (1 - u) * v);
+  const result = { corners, center, normal, at };
+  windshieldPlanes.set(key, result);
+  return result;
+}
+/** The pressure body stays smooth; real apertures admit the flat glazing. */
+export function noseSurfacePoint(x, angle, side, inset = 0) {
+  const p = fuselageProfile(x),
+    r = p.r - inset;
+  return new THREE.Vector3(x, p.y + r * Math.cos(angle), side * r * Math.sin(angle));
+}
+function cutWindshieldHoles(geometry) {
+  const a = geometry.attributes.position,
+    idx = geometry.index,
+    output = [];
+  const cutters = [1, -1].flatMap((side) =>
+    [0, 1, 2].map((i) => {
+      const p = windshieldPlane(i, side),
+        corners = [
+          p.at(-0.035, -0.035),
+          p.at(1.035, -0.035),
+          p.at(1.035, 1.035),
+          p.at(-0.035, 1.035),
+        ];
+      const edges = corners.map((v, j) => {
+        const n = corners[(j + 1) % 4].clone().sub(v).cross(p.normal).normalize();
+        if (p.center.clone().sub(v).dot(n) < 0) n.negate();
+        return { origin: v, normal: n };
+      });
+      return { side, edges };
+    }),
+  );
+  const clip = (poly, edge, inside) => {
+    const result = [];
+    for (let i = 0; i < poly.length; i++) {
+      const p = poly[i],
+        q = poly[(i + 1) % poly.length],
+        dp = p.clone().sub(edge.origin).dot(edge.normal),
+        dq = q.clone().sub(edge.origin).dot(edge.normal);
+      const pin = inside ? dp >= -1e-9 : dp <= 1e-9,
+        qin = inside ? dq >= -1e-9 : dq <= 1e-9;
+      if (pin) result.push(p);
+      if (pin !== qin) result.push(p.clone().lerp(q, dp / (dp - dq)));
+    }
+    return result;
+  };
+  for (let i = 0; i < idx.count; i += 3) {
+    const tri = [0, 1, 2].map((k) => new THREE.Vector3().fromBufferAttribute(a, idx.getX(i + k)));
+    let pieces = [tri];
+    if (tri.some((v) => v.x > -35.5 && v.x < -31 && v.y > 6.9))
+      for (const cutter of cutters) {
+        if (tri.every((v) => v.z * cutter.side < 0)) continue;
+        const next = [];
+        for (const poly of pieces) {
+          if (
+            cutter.edges.some((e) =>
+              poly.every((v) => v.clone().sub(e.origin).dot(e.normal) < -1e-9),
+            )
+          ) {
+            next.push(poly);
+            continue;
+          }
+          let remaining = poly;
+          for (const edge of cutter.edges) {
+            const outside = clip(remaining, edge, false);
+            if (outside.length >= 3) next.push(outside);
+            remaining = clip(remaining, edge, true);
+            if (remaining.length < 3) break;
+          }
+        }
+        pieces = next;
+      }
+    for (const poly of pieces)
+      for (let j = 1; j < poly.length - 1; j++)
+        output.push(...poly[0].toArray(), ...poly[j].toArray(), ...poly[j + 1].toArray());
+  }
+  const raw = new THREE.BufferGeometry();
+  raw.setAttribute('position', new THREE.Float32BufferAttribute(output, 3));
+  const result = mergeVertices(raw, 1e-6);
+  raw.dispose();
+  geometry.dispose();
+  result.computeVertexNormals();
+  return result;
+}
+function windshieldSeat(point, normal) {
+  // Intersect a frame edge with the original pressure shell along the pane normal.
+  const signed = (t) => {
+    const p = point.clone().addScaledVector(normal, t),
+      f = fuselageProfile(p.x);
+    return Math.hypot(p.y - f.y, p.z) - f.r;
+  };
+  let lo = -1,
+    hi = 1;
+  for (let i = 0; i < 40; i++) {
+    const mid = (lo + hi) / 2;
+    if (signed(mid) > 0) hi = mid;
+    else lo = mid;
+  }
+  return point.clone().addScaledVector(normal, (lo + hi) / 2 + 0.008);
+}
+export function windshieldPane(index, side, frame = false) {
+  return cached(`777-flat-windshield:${index}:${side}:${frame}`, () => {
+    const plane = windshieldPlane(index, side),
+      nx = 28,
+      ny = 20,
+      row = ny + 1,
+      n = (nx + 1) * row;
+    const positions = [],
+      normals = [],
+      indices = [];
+    for (let face = 0; face < 2; face++)
+      for (let i = 0; i <= nx; i++)
+        for (let j = 0; j <= ny; j++) {
+          const p = plane
+            .at(i / nx, j / ny)
+            .addScaledVector(plane.normal, (frame ? 0.04 : 0.019) - face * (frame ? 0.014 : 0.01));
+          positions.push(...p.toArray());
+          normals.push(
+            ...plane.normal
+              .clone()
+              .multiplyScalar(face ? -1 : 1)
+              .toArray(),
+          );
+        }
+    const tri = (a, b, c) => (side === 1 ? indices.push(a, b, c) : indices.push(c, b, a));
+    const occupied = (i, j) =>
+      i >= 0 &&
+      i < nx &&
+      j >= 0 &&
+      j < ny &&
+      (!frame || i === 0 || j === 0 || i === nx - 1 || j === ny - 1);
+    for (let i = 0; i < nx; i++)
+      for (let j = 0; j < ny; j++) {
+        if (!occupied(i, j)) continue;
+        const a = i * row + j,
+          b = a + row;
+        tri(a, b, a + 1);
+        tri(a + 1, b, b + 1);
+        tri(a + n, a + 1 + n, b + n);
+        tri(a + 1 + n, b + 1 + n, b + n);
+        for (const [di, dj, c, d] of [
+          [-1, 0, a, a + 1],
+          [1, 0, b + 1, b],
+          [0, -1, b, a],
+          [0, 1, a + 1, b + 1],
+        ])
+          if (!occupied(i + di, j + dj)) {
+            tri(c, d, c + n);
+            tri(d, d + n, c + n);
+          }
+      }
+    if (frame) {
+      const edges = [
+        [
+          [0, 0],
+          [1, 0],
+        ],
+        [
+          [1, 0],
+          [1, 1],
+        ],
+        [
+          [1, 1],
+          [0, 1],
+        ],
+        [
+          [0, 1],
+          [0, 0],
+        ],
+      ];
+      for (const [start, end] of edges)
+        for (let i = 0; i < 28; i++) {
+          const points = [];
+          for (const t of [i / 28, (i + 1) / 28]) {
+            const u = THREE.MathUtils.lerp(start[0], end[0], t),
+              v = THREE.MathUtils.lerp(start[1], end[1], t);
+            const outer = plane.at((u - 0.5) * 1.1 + 0.5, (v - 0.5) * 1.1 + 0.5);
+            points.push(
+              windshieldSeat(outer, plane.normal),
+              plane.at(u, v).addScaledVector(plane.normal, 0.04),
+            );
+          }
+          const base = positions.length / 3;
+          for (const p of points) {
+            positions.push(...p.toArray());
+            normals.push(...plane.normal.toArray());
+          }
+          tri(base, base + 2, base + 1);
+          tri(base + 1, base + 2, base + 3);
+        }
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    g.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+    g.setIndex(indices);
+    g.computeBoundingBox();
+    g.computeBoundingSphere();
+    return g;
+  });
+}
+export function windshieldSurfacePoint(index, side, u, v, offset = 0.06) {
+  const plane = windshieldPlane(index, side);
+  return plane.at(u, v).addScaledVector(plane.normal, offset).toArray();
+}
 export function hullPatch(x0, x1, a0, arc, thickness = 0.045) {
   return cached(`777hull-open:${x0}:${x1}:${a0}:${arc}:${thickness}`, () => {
     const xs = [x0, x1],
       angles = [a0, a0 + arc],
       mid = fuselageProfile((x0 + x1) / 2);
-    const nx0 = Math.max(6, Math.ceil((x1 - x0) * 3)),
-      na0 = Math.max(8, Math.ceil(arc * 20));
+    const nx0 = Math.max(6, Math.ceil((x1 - x0) * (x0 < -30 ? 12 : 3))),
+      na0 = Math.max(8, Math.ceil(arc * (x0 < -30 ? 50 : 20)));
     for (let i = 1; i < nx0; i++) xs.push(x0 + ((x1 - x0) * i) / nx0);
     for (const [x, w] of [
       ...[-26.1, -15, -2, 10.4, 23.7].map((x) => [x, 0.525]),
@@ -169,8 +418,17 @@ export function hullPatch(x0, x1, a0, arc, thickness = 0.045) {
       for (const x of xs) {
         const p = fuselageProfile(x),
           r = Math.max(0.01, p.r - face * thickness);
-        for (const angle of angles)
-          positions.push(x, p.y + r * Math.sin(angle), r * Math.cos(angle));
+        for (const angle of angles) {
+          if (x < -31 && Math.sin(angle) > 0) {
+            const point = noseSurfacePoint(
+              x,
+              Math.acos(THREE.MathUtils.clamp(Math.sin(angle), -1, 1)),
+              Math.cos(angle) >= 0 ? 1 : -1,
+              face * thickness,
+            );
+            positions.push(...point.toArray());
+          } else positions.push(x, p.y + r * Math.sin(angle), r * Math.cos(angle));
+        }
       }
     const filled = (i, j) => {
       if (i < 0 || i >= nx || j < 0 || j >= na) return false;
@@ -208,7 +466,7 @@ export function hullPatch(x0, x1, a0, arc, thickness = 0.045) {
     g.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
     g.setIndex(indices);
     g.computeVertexNormals();
-    return g;
+    return x0 < -30 ? cutWindshieldHoles(g) : g;
   });
 }
 export function ovalPanel(width, height, depth = 0.035, r = 0.12) {
@@ -243,8 +501,21 @@ export function windowRing(width = 0.4, height = 0.57) {
   return cached(`777rim:${width}:${height}`, () => {
     const outer = new THREE.Shape(),
       inner = new THREE.Path();
-    outer.absellipse(0, 0, width / 2, height / 2, 0, Math.PI * 2, false, 0);
-    inner.absellipse(0, 0, width / 2 - 0.028, height / 2 - 0.028, 0, Math.PI * 2, true, 0);
+    const rounded = (path, w, h, r) => {
+      const x = w / 2,
+        y = h / 2;
+      path.moveTo(-x + r, -y);
+      path.lineTo(x - r, -y);
+      path.quadraticCurveTo(x, -y, x, -y + r);
+      path.lineTo(x, y - r);
+      path.quadraticCurveTo(x, y, x - r, y);
+      path.lineTo(-x + r, y);
+      path.quadraticCurveTo(-x, y, -x, y - r);
+      path.lineTo(-x, -y + r);
+      path.quadraticCurveTo(-x, -y, -x + r, -y);
+    };
+    rounded(outer, width, height, 0.12);
+    rounded(inner, width - 0.048, height - 0.048, 0.096);
     outer.holes.push(inner);
     return new THREE.ExtrudeGeometry(outer, {
       depth: 0.025,
@@ -252,6 +523,56 @@ export function windowRing(width = 0.4, height = 0.57) {
       curveSegments: 16,
       steps: 1,
     });
+  });
+}
+
+/** Glazing and its surround conform to the actual shell, including the aft taper. */
+export function passengerWindow(x, y, side, surround = false) {
+  const profileKey = [-0.2, 0, 0.2]
+    .map((dx) => {
+      const p = fuselageProfile(x + dx);
+      return [p.r, p.y].map((n) => n.toFixed(8)).join(',');
+    })
+    .join(':');
+  return cached(`777-conformal-window:${profileKey}:${y}:${side}:${surround}`, () => {
+    const g = surround
+      ? windowRing(0.37, 0.52).clone()
+      : ovalPanel(0.32, 0.47, 0.012, 0.096).clone();
+    const a = g.attributes.position,
+      normals = g.attributes.normal,
+      p = fuselageProfile(x);
+    const z0 = side * Math.sqrt(p.r * p.r - (y - p.y) ** 2);
+    for (let i = 0; i < a.count; i++) {
+      const dx = a.getX(i),
+        dy = a.getY(i),
+        depth = a.getZ(i);
+      const f = fuselageProfile(x + dx),
+        radius = f.r + (surround ? 0.009 : 0.024) + depth;
+      const z = side * Math.sqrt(radius * radius - (y + dy - f.y) ** 2);
+      a.setXYZ(i, dx, dy, z - z0);
+      const before = fuselageProfile(x + dx - 0.001),
+        after = fuselageProfile(x + dx + 0.001);
+      const dr = (after.r - before.r) / 0.002,
+        dc = (after.y - before.y) / 0.002;
+      const radial = new THREE.Vector3(
+        -(y + dy - f.y) * dc - radius * dr,
+        y + dy - f.y,
+        z,
+      ).normalize();
+      const tx = new THREE.Vector3(1, 0, ((y + dy - f.y) * dc + radius * dr) / z).normalize();
+      const ty = new THREE.Vector3(0, 1, -(y + dy - f.y) / z).normalize();
+      const n = tx
+        .multiplyScalar(normals.getX(i))
+        .add(ty.multiplyScalar(normals.getY(i)))
+        .add(radial.multiplyScalar(normals.getZ(i)))
+        .normalize();
+      normals.setXYZ(i, n.x, n.y, n.z);
+    }
+    a.needsUpdate = true;
+    normals.needsUpdate = true;
+    g.computeBoundingBox();
+    g.computeBoundingSphere();
+    return g;
   });
 }
 export const WING_STATIONS = [

@@ -4,10 +4,12 @@ import {
   hullPatch,
   fuselageProfile,
   ovalPanel,
-  windowRing,
+  passengerWindow,
   polygonSolid,
   frameArc,
   curvedBodyPanel,
+  windshieldPane,
+  windshieldSurfacePoint,
 } from './geometry.js';
 
 export const BODY_BAYS = [-36.93, -30, -23, -15, -7, 1, 9, 17, 25, 31, 36.93];
@@ -142,23 +144,14 @@ export function buildFuselage(b) {
         parent = skinFor(x, s === 1 ? 0 : 1),
         y = p.y + h;
       const id = `aircraft.fuselage.window.${s === 1 ? 'left' : 'right'}.${i + 1}`;
-      b.part(
-        id,
-        'Passenger window glazing',
-        parent,
-        ovalPanel(0.32, 0.47, 0.025, 0.12),
-        'glazing',
-        {
-          position: [x, y, z],
-          rotation: [s === 1 ? -0.23 : 0.23, s === 1 ? 0 : Math.PI, 0],
-          move: [0, 0.1, s * 0.7],
-          explode: [0, 0, s * 0.03],
-          purpose:
-            'Passenger glazing representation. It follows its shell segment when the fuselage opens.',
-        },
-      );
-      b.part(`${id}.rim`, 'Window surround', id, windowRing(0.37, 0.54), 'windowRim', {
-        position: [0, 0, s === 1 ? 0.012 : -0.012],
+      b.part(id, 'Passenger window glazing', parent, passengerWindow(x, y, s), 'glazing', {
+        position: [x, y, z],
+        move: [0, 0.1, s * 0.7],
+        explode: [0, 0, s * 0.03],
+        purpose:
+          'Passenger glazing representation. It follows its shell segment when the fuselage opens.',
+      });
+      b.part(`${id}.rim`, 'Window surround', id, passengerWindow(x, y, s, true), 'windowRim', {
         move: [0, 0, 0.15],
         explode: [0, 0, 0.018],
       });
@@ -166,13 +159,12 @@ export function buildFuselage(b) {
   // Glazing follows the compound nose surface rather than sitting inside the hull.
   for (const side of [-1, 1])
     for (let i = 0; i < 3; i++) {
-      const x0 = -34.55 + i * 1.02,
-        x1 = x0 + 0.9;
+      const id = `aircraft.fuselage.windshield.${side}.${i}`;
       b.part(
-        `aircraft.fuselage.windshield.${side}.${i}`,
+        id,
         `Cockpit windshield ${i + 1}`,
         'aircraft.fuselage',
-        curvedBodyPanel(x0, x1, 7.2 + (i === 0 ? 0.12 : 0), 7.88, side),
+        windshieldPane(i, side),
         'glazing',
         {
           layer: 'skin',
@@ -182,6 +174,61 @@ export function buildFuselage(b) {
             'Windshield glazing follows the compound nose profile. Panel shape and framing are educational.',
         },
       );
+      b.part(
+        `${id}.frame`,
+        'Windshield perimeter frame',
+        id,
+        windshieldPane(i, side, true),
+        'windowRim',
+        {
+          move: [0, 0.2, side * 0.3],
+          purpose:
+            'Raised perimeter framing follows the same compound nose surface as its glazing.',
+        },
+      );
+      if (i === 0) {
+        const at = (u, v, depth) => windshieldSurfacePoint(i, side, u, v, depth);
+        b.tube(
+          `${id}.wiper.pivot`,
+          'Windshield wiper pivot',
+          id,
+          at(0.12, 0.02, 0.04),
+          at(0.12, 0.02, 0.085),
+          0.026,
+          'steel',
+          {
+            move: [0, 0.15, side * 0.1],
+            purpose:
+              'Pivot for the parked windshield wiper representation. Wiper sweep is not simulated.',
+          },
+        );
+        b.beam(
+          `${id}.wiper.arm`,
+          'Parked windshield wiper arm',
+          id,
+          at(0.12, 0.02, 0.085),
+          at(0.38, 0.13, 0.07),
+          0.018,
+          0.022,
+          'graphite',
+          {
+            move: [0, 0.15, side * 0.1],
+          },
+        );
+        b.beam(
+          `${id}.wiper.blade`,
+          'Windshield wiper blade',
+          id,
+          at(0.25, 0.12, 0.073),
+          at(0.8, 0.1, 0.073),
+          0.019,
+          0.028,
+          'rubber',
+          {
+            move: [0, 0.15, side * 0.1],
+          },
+        );
+      }
     }
   buildDoors(b);
 }

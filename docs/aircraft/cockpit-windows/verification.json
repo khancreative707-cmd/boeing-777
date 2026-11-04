@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-04T05:47:37.143Z",
+  "browser": "Playwright / Chromium (Browser plugin unavailable)",
+  "checks": [
+    {
+      "name": "front",
+      "expected": "aircraft.fuselage.windshield.1.0",
+      "picked": "aircraft.fuselage.windshield.1.0"
+    },
+    {
+      "name": "left-quarter",
+      "expected": "aircraft.fuselage.windshield.1.0",
+      "picked": "aircraft.fuselage.windshield.1.0"
+    },
+    {
+      "name": "right-quarter",
+      "expected": "aircraft.fuselage.windshield.-1.0",
+      "picked": "aircraft.fuselage.windshield.-1.0"
+    }
+  ],
+  "errors": []
+}

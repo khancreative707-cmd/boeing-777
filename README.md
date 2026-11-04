@@ -1,6 +1,6 @@
 # Boeing 777–300ER · Anatomy Aircraft Laboratory
 
-The default exhibit is now a complete, interactive Boeing 777–300ER with **11,836 registered components**, two detailed GE90–115B engines, sectional cabin/cargo views, cockpit equipment, structures, representative systems and operating maintenance mechanisms. The original standalone GE90 exhibit remains available at **`/?view=engine`**.
+The default exhibit is now a complete, interactive Boeing 777–300ER with **11,848 registered components**, two detailed GE90–115B engines, sectional cabin/cargo views, cockpit equipment, structures, representative systems and operating maintenance mechanisms. The original standalone GE90 exhibit remains available at **`/?view=engine`**.
 
 See the [aircraft guide, hierarchy and approximation notes](docs/aircraft/README.md), [actual mesh audit](docs/aircraft/geometry-audit.json), and [browser screenshots](docs/aircraft/screenshots/). Both exhibits run from the same application and deployment.
 

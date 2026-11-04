@@ -394,6 +394,8 @@
     font-size: 8px;
   }
   .aircraft-viewport .viewport-heading {
+    display: flex;
+    padding: 0;
     top: 17px;
     left: 16px;
     right: 16px;
@@ -408,7 +410,11 @@
     font-size: 9px;
   }
   .aircraft-viewport .viewport-heading nav {
+    position: static;
     justify-content: flex-start;
+  }
+  .aircraft-viewport .airflow-legend {
+    top: 105px;
   }
   .aircraft-viewport .camera-views button:first-child {
     display: inline-flex;
@@ -425,7 +431,7 @@
     inset: 50px 0 100px;
   }
   .aircraft-viewport .isolation-back {
-    top: 122px;
+    top: 150px;
     left: 17px;
   }
   .aircraft-viewport .viewport-bottom {

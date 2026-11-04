@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-04T05:17:05.026Z",
+  "browser": "Playwright / Chromium (Browser plugin unavailable)",
+  "checks": [
+    {
+      "name": "left-close",
+      "expected": "aircraft.fuselage.window.left.43",
+      "picked": "aircraft.fuselage.window.left.43"
+    },
+    {
+      "name": "right-close",
+      "expected": "aircraft.fuselage.window.right.43",
+      "picked": "aircraft.fuselage.window.right.43"
+    },
+    {
+      "name": "aft-close",
+      "expected": "aircraft.fuselage.window.left.77",
+      "picked": "aircraft.fuselage.window.left.77"
+    }
+  ],
+  "errors": []
+}

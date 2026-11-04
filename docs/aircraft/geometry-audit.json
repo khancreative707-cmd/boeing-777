@@ -1,17 +1,17 @@
 {
-  "date": "2026-11-03T08:53:09.372Z",
+  "date": "2026-11-04T05:46:49.075Z",
   "model": "Boeing 777–300ER",
-  "componentCount": 11836,
+  "componentCount": 11848,
   "checks": [
     {
       "name": "All component IDs, parent edges and removal references resolve",
       "passed": true,
-      "measured": 11836
+      "measured": 11848
     },
     {
       "name": "Every drawn geometry vertex has a finite world transform",
       "passed": true,
-      "measured": 11836
+      "measured": 11848
     },
     {
       "name": "Actual pressure-shell mesh spans the 73.86 m reference envelope",
@@ -132,7 +132,7 @@
     {
       "name": "Every assembly and physical part returns to its exact local mount",
       "passed": true,
-      "measured": 11836
+      "measured": 11848
     }
   ],
   "limitations": "Reference envelope and educational geometry. This sampled mesh/transform audit is not an exhaustive triangle-collision proof or a certified maintenance sequence."

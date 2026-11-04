@@ -7,6 +7,89 @@ import { AIRCRAFT, AIRCRAFT_TOUR } from '../src/aircraft/spec.js';
 import { fuselageProfile, doorOpeningAt } from '../src/aircraft/geometry.js';
 import { applySpoolTransforms, applyVariableStators } from '../src/engine/mechanics.js';
 const lab = new AircraftLab();
+test('six flat windshield panes are mirrored, planar and mounted over real nose apertures', () => {
+  lab.root.updateMatrixWorld(true);
+  for (let i = 0; i < 3; i++)
+    for (const suffix of ['', '.frame']) {
+      const l = lab.registry.get(`aircraft.fuselage.windshield.1.${i}${suffix}`);
+      const r = lab.registry.get(`aircraft.fuselage.windshield.-1.${i}${suffix}`);
+      const g = l.visuals[0].mesh.geometry,
+        a = g.attributes.position,
+        b = r.visuals[0].mesh.geometry.attributes.position;
+      assert.equal(a.count, b.count);
+      for (let j = 0; j < a.count; j++) {
+        assert.equal(a.getX(j), b.getX(j));
+        assert.equal(a.getY(j), b.getY(j));
+        assert.equal(a.getZ(j), -b.getZ(j));
+        const n = new THREE.Vector3().fromBufferAttribute(g.attributes.normal, 0);
+        const origin = new THREE.Vector3().fromBufferAttribute(a, 0);
+        if (!suffix && j < a.count / 2)
+          assert.ok(
+            Math.abs(new THREE.Vector3().fromBufferAttribute(a, j).sub(origin).dot(n)) < 0.00001,
+          );
+      }
+      if (!suffix) {
+        const n = new THREE.Vector3().fromBufferAttribute(g.attributes.normal, 0);
+        const skins = [0, 1].flatMap((q) =>
+          lab.registry.get(`aircraft.fuselage.skin.0.${q}`).visuals.map((v) => v.mesh),
+        );
+        for (const [u, v] of [
+          [14, 10],
+          [5, 5],
+          [23, 15],
+        ]) {
+          const point = new THREE.Vector3().fromBufferAttribute(a, u * 21 + v);
+          const ray = new THREE.Raycaster(
+            point.clone().addScaledVector(n, 0.04),
+            n.clone().negate(),
+            0,
+            0.1,
+          );
+          const hits = ray.intersectObjects(skins, false);
+          assert.equal(hits.length, 0, 'The skin aperture must clear each flat pane');
+        }
+      }
+      assert.equal(l.parent, suffix ? `aircraft.fuselage.windshield.1.${i}` : 'aircraft.fuselage');
+    }
+});
+test('passenger window glass and surrounds clear the curved shell on both sides', () => {
+  lab.root.updateMatrixWorld(true);
+  let count = 0;
+  for (const p of lab.registry.entries.values()) {
+    if (!/^aircraft\.fuselage\.window\./.test(p.id)) continue;
+    const a = p.visuals[0].mesh.geometry.attributes.position;
+    const world = (i) =>
+      new THREE.Vector3().fromBufferAttribute(a, i).applyMatrix4(p.object.matrixWorld);
+    const clearance = (v) => {
+      const f = fuselageProfile(v.x);
+      return Math.hypot(v.y - f.y, v.z) - f.r;
+    };
+    for (let i = 0; i < a.count; i++) assert.ok(clearance(world(i)) > 0.001, p.id);
+    const g = p.visuals[0].mesh.geometry,
+      indices = g.index;
+    for (let i = 0; i < (indices ? indices.count : a.count); i += 3) {
+      const c = new THREE.Vector3();
+      for (let j = 0; j < 3; j++) c.add(world(indices ? indices.getX(i + j) : i + j));
+      assert.ok(clearance(c.divideScalar(3)) > 0.0001, p.id + ' triangle cuts the skin');
+    }
+    assert.ok(p.object.quaternion.equals(new THREE.Quaternion()), p.id);
+    count++;
+  }
+  assert.ok(count > 200);
+});
+test('hidden instance batches stop drawing and become drawable again on reveal', () => {
+  const batch = lab.registry.batches.find((b) => b.worldFrames);
+  const visible = new Map(batch.ids.map((id) => [id, lab.registry.get(id).visible]));
+  for (const id of batch.ids) lab.registry.setVisible(id, false);
+  lab.registry.sync();
+  assert.equal(batch.mesh.visible, false);
+  for (const [id, on] of visible) lab.registry.setVisible(id, on);
+  lab.registry.sync();
+  assert.equal(
+    batch.mesh.visible,
+    batch.ids.some((id) => lab.registry.effectiveVisible(id)),
+  );
+});
 test('demand-rendered reduced-motion gear sequence keeps requesting frames until complete', () => {
   const mechanism = new AircraftMechanisms();
   mechanism.requestGear(true);

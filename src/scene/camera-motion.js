@@ -1,5 +1,11 @@
 import * as THREE from 'three';
 
+export function inspectionDistance(size, fov, aspect) {
+  const vertical = THREE.MathUtils.degToRad(fov / 2);
+  const horizontal = Math.atan(Math.tan(vertical) * aspect);
+  return Math.max(0.8, size / (2 * Math.sin(Math.min(vertical, horizontal))) / 0.72);
+}
+
 // Travel around the inspection target instead of cutting through the engine.
 export function cameraFlightPosition(flight, progress) {
   const t = Math.max(0, Math.min(1, progress));

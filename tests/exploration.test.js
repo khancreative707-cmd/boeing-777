@@ -3,7 +3,16 @@ import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { EngineLab } from '../src/engine/lab.js';
 import { ENGINE_TOUR } from '../src/engine/tour.js';
-import { cameraFlightPosition } from '../src/scene/camera-motion.js';
+import { cameraFlightPosition, inspectionDistance } from '../src/scene/camera-motion.js';
+
+test('inspection framing reserves space around a bounding sphere in portrait and landscape', () => {
+  for (const aspect of [0.45, 1, 1.5]) {
+    const distance = inspectionDistance(8, 35, aspect);
+    const vertical = THREE.MathUtils.degToRad(17.5);
+    const halfAngle = Math.min(vertical, Math.atan(Math.tan(vertical) * aspect));
+    assert.ok(Math.asin(4 / distance) < halfAngle * 0.8);
+  }
+});
 
 test('tour selects real assemblies and restores user visibility on manual takeover', () => {
   const lab = new EngineLab();

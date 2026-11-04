@@ -5,9 +5,9 @@ export function createAircraftMaterials() {
   const make = (color, metalness, roughness) =>
     new THREE.MeshStandardMaterial({ color, metalness, roughness, side: THREE.DoubleSide });
   Object.assign(base.materials, {
-    paint: make('#d3d8d4', 0.12, 0.38),
+    paint: make('#bdc6c6', 0.18, 0.34),
     skinInner: make('#aeb6ae', 0.55, 0.42),
-    glazing: make('#263a40', 0.65, 0.18),
+    glazing: make('#263a40', 0.2, 0.28),
     windowRim: make('#a8afaa', 0.6, 0.34),
     upholstery: make('#525b59', 0.05, 0.86),
     cabinCream: make('#c8c4b4', 0.05, 0.7),

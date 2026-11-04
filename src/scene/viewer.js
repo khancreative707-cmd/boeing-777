@@ -3,7 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { applySpoolTransforms, applyVariableStators } from '../engine/mechanics.js';
 import { FlowEffects } from './effects.js';
-import { cameraFlightPosition } from './camera-motion.js';
+import { cameraFlightPosition, inspectionDistance } from './camera-motion.js';
 import { AircraftEffects } from '../aircraft/effects.js';
 
 const VIEWS = {
@@ -375,7 +375,7 @@ export class EngineViewer {
     this.transition(
       center
         .clone()
-        .addScaledVector(dir, Math.max(0.8, size * 1.5) * Math.max(1, 1 / this.camera.aspect))
+        .addScaledVector(dir, inspectionDistance(size, this.camera.fov, this.camera.aspect))
         .toArray(),
       center.toArray(),
     );

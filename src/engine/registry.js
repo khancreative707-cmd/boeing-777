@@ -158,6 +158,7 @@ export class ComponentRegistry {
           if (visual.index === undefined) visual.mesh.visible = p.renderVisible;
       }
     for (const { mesh, ids, worldFrames } of this.batches) {
+      if (this.visibilityDirty) mesh.visible = ids.some((id) => this.get(id).renderVisible);
       let changed = false;
       let inverse;
       if (worldFrames) {

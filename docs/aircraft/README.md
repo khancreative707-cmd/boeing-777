@@ -1,5 +1,7 @@
 # Boeing 777–300ER aircraft exhibit
 
+See the latest [visual polish and bug-fix verification](polish/README.md) for improved inspection framing, phone layout, paint and hidden-batch rendering.
+
 The aircraft extends the original Anatomy GE90 laboratory with a freely orbitable whole-aircraft assembly. React owns the interface; Three.js draws procedural geometry with depth testing, shared materials and separately addressable GPU instances. Anatomy supplies the craft approach and its `smooth` / `settle` motion functions. The original installed skill, examples and references remain in `.agents/skills/anatomy/`.
 
 ## Run and deploy
@@ -28,7 +30,7 @@ Open the development server on port 5173. `/` opens the aircraft; `/?view=engine
 
 ## Assembly ownership
 
-The current registry contains **11,836 entries**, including assembly frames and individually modeled physical parts. Every entry records a unique ID, parent, original position/quaternion/scale, material, purpose, mechanical relationship, removal vector, explode vector and blockers. The complete reproducible inventory is [component-hierarchy.ndjson](component-hierarchy.ndjson), one JSON object per line. Generate it with `npm run audit:aircraft`.
+The current registry contains **11,848 entries**, including assembly frames and individually modeled physical parts. Every entry records a unique ID, parent, original position/quaternion/scale, material, purpose, mechanical relationship, removal vector, explode vector and blockers. The complete reproducible inventory is [component-hierarchy.ndjson](component-hierarchy.ndjson), one JSON object per line. Generate it with `npm run audit:aircraft`.
 
 | Root | Contents |
 | --- | --- |
