@@ -1,0 +1,93 @@
+{
+  "date": "2026-11-04T06:34:48.046Z",
+  "browser": "Playwright/Chromium; Browser plugin unavailable",
+  "checks": [
+    {
+      "name": "Compact phone layout",
+      "width": 320,
+      "height": 640,
+      "overflow": false,
+      "titleClear": true,
+      "dock": 115,
+      "viewport": 360,
+      "toolbarHeight": 48,
+      "touch": true
+    },
+    {
+      "name": "Compact phone layout",
+      "width": 390,
+      "height": 844,
+      "overflow": false,
+      "titleClear": true,
+      "dock": 115,
+      "viewport": 564,
+      "toolbarHeight": 48,
+      "touch": true
+    },
+    {
+      "name": "Compact phone layout",
+      "width": 430,
+      "height": 932,
+      "overflow": false,
+      "titleClear": true,
+      "dock": 115,
+      "viewport": 652,
+      "toolbarHeight": 48,
+      "touch": true
+    },
+    {
+      "name": "Expanded controls, flap slider, scrollable mechanisms sheet and close action work"
+    },
+    {
+      "name": "Focused gear stays between mobile toolbar and instruments",
+      "top": 321.1320528771099,
+      "low": 504.8350822202564,
+      "heading": 247.59375,
+      "instruments": 593
+    },
+    {
+      "name": "Touch drawer search/selection, modal focus containment, Escape and focus restoration work"
+    },
+    {
+      "name": "Real touch drag orbits the WebGL camera"
+    },
+    {
+      "name": "Tablet layout and modal inspector work without overflow"
+    },
+    {
+      "name": "Landscape page can scroll to operating controls without horizontal overflow"
+    },
+    {
+      "name": "Desktop retains the complete control bar"
+    }
+  ],
+  "errors": [],
+  "tabletCorrection": {
+    "date": "2026-11-04T06:39:29.908Z",
+    "checks": [
+      {
+        "name": "tablet",
+        "width": 768,
+        "height": 1024,
+        "scroll": 768,
+        "visualWidth": 768
+      },
+      {
+        "name": "landscape",
+        "width": 844,
+        "height": 390,
+        "scroll": 844,
+        "visualWidth": 844
+      },
+      {
+        "name": "desktop",
+        "width": 1568,
+        "height": 1003,
+        "scroll": 1568,
+        "visualWidth": 1568
+      }
+    ],
+    "errors": [],
+    "reason": "Verify that the hidden tablet inspector cannot expand the layout viewport or trigger browser overview scaling."
+  }
+}

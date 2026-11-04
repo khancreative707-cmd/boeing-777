@@ -1,7 +1,13 @@
 import { memo, useDeferredValue, useMemo, useState } from 'react';
 import { ChevronRight, ChevronDown, Eye, EyeOff, Search, Box, Layers3, X } from 'lucide-react';
 
-export const AssemblyTree = memo(function AssemblyTree({ lab, selected, version, onClose }) {
+export const AssemblyTree = memo(function AssemblyTree({
+  lab,
+  selected,
+  version,
+  onClose,
+  modal = false,
+}) {
   const [query, setQuery] = useState('');
   const deferred = useDeferredValue(query);
   const treeRoot = lab.state.inspectionRoot || lab.rootId || 'ge90';
@@ -58,7 +64,13 @@ export const AssemblyTree = memo(function AssemblyTree({ lab, selected, version,
     }
   };
   return (
-    <aside className="assembly-panel" aria-label="Component assembly hierarchy">
+    <aside
+      className="assembly-panel"
+      aria-label="Component assembly hierarchy"
+      role={modal ? 'dialog' : undefined}
+      aria-modal={modal || undefined}
+      tabIndex={modal ? -1 : undefined}
+    >
       <div className="panel-heading">
         <div>
           <h2>Assembly</h2>

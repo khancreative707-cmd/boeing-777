@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { PartPreview } from './PartPreview.jsx';
 import { GuidedTour } from './GuidedTour.jsx';
-export function Inspector({ lab, state, onClose }) {
+export function Inspector({ lab, state, onClose, modal = false }) {
   const p = lab.registry.get(state.selected),
     parent = lab.registry.get(p?.parent);
   if (!p) return null;
@@ -30,7 +30,13 @@ export function Inspector({ lab, state, onClose }) {
   const spool = p.spool || lab.registry.ancestors(p.id).find((a) => a.spool)?.spool;
   const isRoot = p.kind === 'root';
   return (
-    <aside className="inspector-panel" aria-label="Component inspector">
+    <aside
+      className="inspector-panel"
+      aria-label="Component inspector"
+      role={modal ? 'dialog' : undefined}
+      aria-modal={modal || undefined}
+      tabIndex={modal ? -1 : undefined}
+    >
       <div className="inspector-eyebrow">
         <span>COMPONENT INSPECTOR</span>
         <button className="icon-button drawer-close" aria-label="Close inspector" onClick={onClose}>

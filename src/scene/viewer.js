@@ -262,9 +262,11 @@ export class EngineViewer {
     if (!w || !h) return;
     this.renderer.setSize(w, h);
     this.camera.aspect = w / h;
+    const aircraftFit =
+      this.lab.kind === 'aircraft' && matchMedia('(max-width: 760px)').matches ? 1.25 : 1.1;
     const framingScale = Math.max(
         1,
-        (this.lab.kind === 'aircraft' ? 1.1 : 1.45) / this.camera.aspect,
+        (this.lab.kind === 'aircraft' ? aircraftFit : 1.45) / this.camera.aspect,
       ),
       previousScale = this.framingScale || 1;
     if (Math.abs(framingScale - previousScale) > 0.001) {
@@ -372,10 +374,29 @@ export class EngineViewer {
     const center = bounds.getCenter(new THREE.Vector3()),
       size = bounds.getSize(new THREE.Vector3()).length();
     const dir = this.camera.position.clone().sub(this.controls.target).normalize();
+    let usable = 0.72;
+    if (this.lab.kind === 'aircraft' && matchMedia('(max-width: 760px)').matches) {
+      const canvas = this.element.getBoundingClientRect();
+      const heading = this.element.parentElement
+        .querySelector('.viewport-heading')
+        .getBoundingClientRect();
+      const instruments = this.element.parentElement
+        .querySelector('.viewport-bottom')
+        .getBoundingClientRect();
+      const top = heading.bottom - canvas.top + 12,
+        bottom = instruments.top - canvas.top - 12;
+      usable = Math.max(
+        0.12,
+        Math.min(
+          0.72,
+          (2 * Math.min(canvas.height / 2 - top, bottom - canvas.height / 2)) / canvas.height,
+        ),
+      );
+    }
     this.transition(
       center
         .clone()
-        .addScaledVector(dir, inspectionDistance(size, this.camera.fov, this.camera.aspect))
+        .addScaledVector(dir, inspectionDistance(size, this.camera.fov, this.camera.aspect, usable))
         .toArray(),
       center.toArray(),
     );

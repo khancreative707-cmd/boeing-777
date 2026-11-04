@@ -13,6 +13,15 @@
 .aircraft-laboratory .header-right {
   gap: 14px;
 }
+.aircraft-laboratory .workspace {
+  position: relative;
+}
+@media (min-width: 761px) and (max-width: 1100px) {
+  .aircraft-laboratory .inspector-panel {
+    top: 0;
+    bottom: 0;
+  }
+}
 .exhibit-tabs {
   display: flex;
   gap: 4px;
@@ -532,4 +541,297 @@
   .aircraft-laboratory .inspector-scroll {
     padding: 0 18px 20px;
   }
+}
+
+/* Keep one set of operating controls across desktop and touch layouts. */
+.aircraft-secondary-controls,
+.aircraft-quick-controls {
+  display: contents;
+}
+.mobile-controls-toggle {
+  display: none;
+}
+.mechanism-sheet-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.mechanism-sheet-heading .button {
+  min-height: 36px;
+}
+@media (max-width: 760px) {
+  .aircraft-laboratory {
+    min-height: 0;
+    height: 100dvh;
+  }
+  .aircraft-laboratory .app-header {
+    height: auto;
+    min-height: 56px;
+    padding: max(6px, env(safe-area-inset-top)) 12px 6px;
+  }
+  .aircraft-laboratory .header-right {
+    gap: 4px;
+  }
+  .aircraft-laboratory .app-header button,
+  .aircraft-laboratory .wordmark,
+  .aircraft-laboratory .mobile-toolbar button {
+    min-height: 44px;
+  }
+  .aircraft-laboratory .app-header .icon-button,
+  .aircraft-laboratory .reference-button,
+  .aircraft-laboratory .tour-launch {
+    min-width: 44px;
+    justify-content: center;
+  }
+  .aircraft-laboratory .exhibit-tabs button {
+    font-size: 10px;
+  }
+  .aircraft-laboratory .mobile-toolbar {
+    min-height: 50px;
+    padding: 3px 12px;
+  }
+  .aircraft-laboratory .mobile-toolbar .button {
+    font-size: 11px;
+    padding: 8px 10px;
+  }
+  .aircraft-viewport .viewport-heading {
+    top: 12px;
+    left: 12px;
+    right: 12px;
+  }
+  .aircraft-viewport .viewport-heading h1 {
+    font-size: 23px;
+  }
+  .aircraft-viewport .camera-views {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    width: 100%;
+    padding-bottom: 4px;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+  }
+  .aircraft-viewport .viewport-heading .camera-views {
+    flex-wrap: nowrap;
+  }
+  .aircraft-viewport .camera-views button,
+  .aircraft-viewport .camera-views select {
+    flex-shrink: 0;
+    min-height: 44px;
+    font-size: 11px;
+    padding: 8px 11px;
+  }
+  .aircraft-viewport .camera-views select {
+    max-width: none;
+  }
+  .aircraft-viewport .viewport-canvas {
+    inset: 0;
+  }
+  .aircraft-viewport .airflow-legend {
+    top: 117px;
+  }
+  .aircraft-viewport .isolation-back {
+    top: 155px;
+    min-height: 44px;
+  }
+  .aircraft-controls {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 6px;
+    padding: 8px 12px;
+    min-height: 0;
+  }
+  .aircraft-controls .engine-command-pair {
+    flex-shrink: 0;
+  }
+  .aircraft-controls .engine-command {
+    min-width: 0;
+    gap: 4px;
+  }
+  .aircraft-controls .engine-command .button {
+    min-width: 58px;
+    min-height: 44px;
+    padding: 6px;
+    font-size: 11px;
+  }
+  .aircraft-controls input[type='range'] {
+    min-height: 44px;
+    touch-action: pan-y;
+  }
+  .aircraft-controls .engine-command input {
+    min-width: 20px;
+    width: 46px;
+  }
+  .aircraft-controls .engine-command output {
+    display: block;
+    width: 29px;
+    flex-shrink: 0;
+    font-size: 9px;
+  }
+  .aircraft-quick-controls {
+    display: flex;
+    gap: 8px;
+  }
+  .aircraft-quick-controls > button {
+    flex: 1;
+    min-height: 44px;
+    font-size: 11px;
+    justify-content: center;
+  }
+  .mobile-controls-toggle {
+    display: inline-flex;
+  }
+  .mobile-controls-toggle[aria-expanded='false'] > svg:last-child {
+    transform: rotate(180deg);
+  }
+  .aircraft-secondary-controls {
+    display: grid;
+    order: 3;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 8px;
+    max-height: min(35dvh, 270px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-top: 6px;
+    border-top: 1px solid var(--line);
+  }
+  .aircraft-controls[data-expanded='false'] .aircraft-secondary-controls {
+    display: none;
+  }
+  .aircraft-controls[data-expanded='true'] {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 12;
+    max-height: 70dvh;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -12px 40px #3036321a;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+  .aircraft-secondary-controls .button,
+  .aircraft-secondary-controls .toggle-control,
+  .aircraft-secondary-controls summary {
+    min-height: 44px;
+    font-size: 11px;
+    justify-content: center;
+  }
+  .aircraft-secondary-controls .aircraft-flaps {
+    grid-column: 1 / -1;
+    font-size: 12px;
+  }
+  .aircraft-secondary-controls .aircraft-flaps input {
+    flex: 1;
+  }
+  .aircraft-secondary-controls .aircraft-reset {
+    grid-column: 1 / -1;
+    justify-content: space-between;
+  }
+  .aircraft-secondary-controls .aircraft-reset .icon-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .aircraft-controls .mechanism-popover {
+    left: 12px;
+    right: 12px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    width: auto;
+    max-height: 75dvh;
+    z-index: 25;
+    overscroll-behavior: contain;
+  }
+  .mechanism-sheet-heading {
+    position: sticky;
+    top: -16px;
+    padding: 8px 0;
+    background: var(--panel);
+    z-index: 1;
+  }
+  .mechanism-popover label {
+    min-height: 44px;
+    font-size: 12px;
+  }
+  .mechanism-popover select {
+    min-height: 44px;
+    font-size: 16px;
+  }
+  .aircraft-laboratory .assembly-panel,
+  .aircraft-laboratory .inspector-panel {
+    width: min(92vw, 360px);
+  }
+  .aircraft-laboratory .search-field input {
+    font-size: 16px;
+  }
+  .aircraft-laboratory .tree-row {
+    min-height: 44px;
+  }
+  .aircraft-laboratory .tree-label {
+    font-size: 12px;
+  }
+  .aircraft-laboratory .tree-visibility,
+  .aircraft-laboratory .drawer-close {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .aircraft-laboratory .inspector-actions .button,
+  .aircraft-laboratory .rotation-axis button {
+    min-height: 44px;
+  }
+  .aircraft-laboratory .status-bar {
+    height: auto;
+    min-height: 30px;
+    padding-bottom: max(6px, env(safe-area-inset-bottom));
+  }
+}
+@media (max-height: 500px) and (max-width: 1100px) {
+  .aircraft-laboratory {
+    height: auto;
+    min-height: 100dvh;
+  }
+  .aircraft-laboratory .workspace {
+    flex: none;
+    height: 380px;
+    min-height: 380px;
+  }
+  .aircraft-laboratory .viewport-canvas {
+    inset: 0;
+  }
+}
+@media (pointer: coarse) {
+  .aircraft-laboratory .controls-bar button,
+  .aircraft-laboratory .controls-bar summary,
+  .aircraft-laboratory .controls-bar select,
+  .aircraft-laboratory .camera-views button,
+  .aircraft-laboratory .camera-views select,
+  .aircraft-laboratory .inspector-actions button {
+    min-height: 44px;
+  }
+  .aircraft-laboratory input[type='range'] {
+    min-height: 44px;
+  }
+  .aircraft-laboratory .tree-scroll,
+  .aircraft-laboratory .inspector-scroll {
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+/* Portaling the phone menu avoids clipping by the scrollable control sheet. */
+.aircraft-mechanism-portal {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  width: auto;
+  max-height: 75dvh;
+  z-index: 30;
+  overscroll-behavior: contain;
+}
+.aircraft-mechanism-portal button,
+.aircraft-mechanism-portal select,
+.aircraft-mechanism-portal input[type='range'] {
+  min-height: 44px;
+}
+.aircraft-mechanism-portal .toggle-control {
+  font-size: 12px;
 }

@@ -12,6 +12,7 @@ test('inspection framing reserves space around a bounding sphere in portrait and
     const halfAngle = Math.min(vertical, Math.atan(Math.tan(vertical) * aspect));
     assert.ok(Math.asin(4 / distance) < halfAngle * 0.8);
   }
+  assert.ok(inspectionDistance(8, 35, 1, 0.35) > inspectionDistance(8, 35, 1, 0.72));
 });
 
 test('tour selects real assemblies and restores user visibility on manual takeover', () => {

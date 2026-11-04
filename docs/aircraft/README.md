@@ -2,6 +2,8 @@
 
 See the latest [visual polish and bug-fix verification](polish/README.md) for improved inspection framing, phone layout, paint and hidden-batch rendering.
 
+The [mobile interface](mobile/README.md) adds a compact touch dock, overlay controls, scrollable camera toolbar and accessible component drawers. Run `npm run test:mobile` to reproduce its viewport and interaction checks.
+
 The aircraft extends the original Anatomy GE90 laboratory with a freely orbitable whole-aircraft assembly. React owns the interface; Three.js draws procedural geometry with depth testing, shared materials and separately addressable GPU instances. Anatomy supplies the craft approach and its `smooth` / `settle` motion functions. The original installed skill, examples and references remain in `.agents/skills/anatomy/`.
 
 ## Run and deploy

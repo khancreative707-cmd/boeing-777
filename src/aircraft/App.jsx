@@ -1,4 +1,4 @@
-import { useState, useSyncExternalStore } from 'react';
+import { useState, useSyncExternalStore, useEffect } from 'react';
 import {
   Compass,
   BookOpen,
@@ -21,6 +21,66 @@ export default function AircraftApp() {
   const [drawer, setDrawer] = useState(null),
     [notes, setNotes] = useState(false);
   const trail = [...lab.registry.ancestors(state.selected)].reverse();
+  useEffect(() => {
+    if (!drawer) return;
+    const previous = document.activeElement;
+    const panel = document.querySelector(
+      drawer === 'assembly' ? '.assembly-panel' : '.inspector-panel',
+    );
+    if (!panel) return;
+    const background = [
+      ...document.querySelectorAll(
+        '.app-header, .mobile-toolbar, .aircraft-navigation, .viewport-panel, .controls-bar, .status-bar, .assembly-panel, .inspector-panel',
+      ),
+    ].filter((el) => el !== panel);
+    for (const el of background) el.inert = true;
+    const desktop = matchMedia('(min-width: 761px)');
+    const onDesktop = () => {
+      if (desktop.matches) setDrawer(null);
+    };
+    desktop.addEventListener('change', onDesktop);
+    const focusable = () =>
+      [
+        ...panel.querySelectorAll('button:not([disabled]), input, select, a[href], [tabindex="0"]'),
+      ].filter((el) => el.getClientRects().length);
+    (focusable()[0] || panel).focus();
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
+        setDrawer(null);
+      }
+      if (e.key === 'Tab') {
+        const list = focusable(),
+          first = list[0],
+          last = list.at(-1);
+        if (!first) {
+          e.preventDefault();
+          return;
+        }
+        if (
+          e.shiftKey &&
+          (document.activeElement === first || !panel.contains(document.activeElement))
+        ) {
+          e.preventDefault();
+          last.focus();
+        } else if (
+          !e.shiftKey &&
+          (document.activeElement === last || !panel.contains(document.activeElement))
+        ) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+    document.addEventListener('keydown', onKey, true);
+    return () => {
+      document.removeEventListener('keydown', onKey, true);
+      desktop.removeEventListener('change', onDesktop);
+      for (const el of background) el.inert = false;
+      if (previous?.isConnected) previous.focus();
+    };
+  }, [drawer]);
   return (
     <div className={`laboratory aircraft-laboratory ${drawer ? `drawer-${drawer}` : ''}`}>
       <header className="app-header">
@@ -137,11 +197,17 @@ export default function AircraftApp() {
           selected={state.selected}
           version={state.version}
           onClose={() => setDrawer(null)}
+          modal={drawer === 'assembly'}
         />
         <Viewport lab={lab} state={state} />
-        <Inspector lab={lab} state={state} onClose={() => setDrawer(null)} />
+        <Inspector
+          lab={lab}
+          state={state}
+          onClose={() => setDrawer(null)}
+          modal={drawer === 'inspector'}
+        />
       </div>
-      <AircraftControls lab={lab} state={state} />
+      <AircraftControls lab={lab} state={state} drawerOpen={Boolean(drawer)} />
       <footer className="status-bar">
         <div>
           <i
